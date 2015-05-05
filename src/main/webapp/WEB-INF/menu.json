@@ -1,0 +1,19 @@
+{
+	"button":[
+		{
+			"name":"所有活动",
+			"type":"view",
+			"url":"http://m.idreamfactory.cn/activities.do"
+		},
+		{
+			"name":"我要参加",
+			"type":"view",
+			"url":"http://m.idreamfactory.cn/countMeIn.do"
+		},
+		{
+			"name":"『我的』",
+			"type":"view",
+			"url":"http://m.idreamfactory.cn/myStuff.do"
+		}
+	]
+}

@@ -1,0 +1,6 @@
+/target/
+/src/test/
+/src/main/webapp/resources/images/
+*.swp
+*.swo
+
