@@ -90,20 +90,11 @@ public class AuthUtils {
 	public static String genJsSignature(String nonce, String ticket, String timestamp, String url ) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-1");
-			String[] arr = {nonce, timestamp, ticket, url };
-			Arrays.sort(arr);
 			StringBuffer sb = new StringBuffer();
-			for( int i=0; i<arr.length; i++) {
-				if(arr[i].equals(nonce)) {
-					sb.append("noncestr="); sb.append(arr[i]);
-				} else if( arr[i].equals(ticket)) {
-					sb.append("jsapi_ticket="); sb.append(arr[i]);
-				} else if( arr[i].equals(timestamp)) {
-					sb.append("timestamp="); sb.append(arr[i]);
-				} else {
-					sb.append("url="); sb.append(arr[i]);
-				}
-			}
+			sb.append("jsapi_ticket="); sb.append(ticket); 
+			sb.append("&noncestr="); sb.append(nonce);
+			sb.append("&timestamp="); sb.append(timestamp);
+			sb.append("&url="); sb.append(url);
 			byte[] data = md.digest(sb.toString().getBytes("utf-8"));
 			return byte2hex(data);
 		} catch(Exception e) {
@@ -239,12 +230,12 @@ public class AuthUtils {
 		return jsTicket;
 	}
 
-	public static boolean downloadImage(long id, String path)  {
+	public static boolean downloadImage(String id, String path)  {
 		FileOutputStream fs = null;
 		InputStream in = null;
 		try {
 			String token = getAccessToken();
-			String ref = String.format("%s?access_token=%s&media_id=%d", mediaUrl, token, id);
+			String ref = String.format("%s?access_token=%s&media_id=%s", mediaUrl, token, id);
 			HttpURLConnection conn = null;
 			URL url = new URL(ref);
 			conn = (HttpURLConnection) url.openConnection();

@@ -173,7 +173,12 @@ dreamControllers.controller('imgController',function($http, $scope, $stateParams
 dreamControllers.controller('tabActivitiesController', function($scope, $http, $ionicModal, $ionicHistory, $state, ActivityResource) {
     $scope.activities = ActivityResource.query(); 
 
-    $scope.imgInfo = {};
+    
+    $scope.imgInfo = {
+    		uploadImgName:'',
+    		uploadImgDesc:'',
+    		currentSel:''
+    };
 
     $ionicModal.fromTemplateUrl('uploadImg.html', function($ionicModal) {
         $scope.modal = $ionicModal;
@@ -185,30 +190,56 @@ dreamControllers.controller('tabActivitiesController', function($scope, $http, $
     $scope.uploadDlg = function(aId) {
         $scope.modal.show();
         $scope.modalActivity = aId;
-    }
+    };
 
     $scope.exitUpload = function() {
+        $scope.clean();
         $scope.modal.hide();
-        wx_cleanImage();
-    }
+    };
+    $scope.clean = function() {
+        we_cleanImage();
+        $scope.imgInfo.uploadImgName = '';
+        $scope.imgInfo.uploadImgDesc = '';
+        $scope.imgInfo.currentSel = '';
+    };
     
     $scope.chooseImg = function() {
-    	we_chooseImage();
-    }
+    	we_chooseImage($scope.imgInfo);
+    };
     
-    $scope.uploadImg = function() {
-    	if( $scope.imgInfo.uploadImgName == null || $scope.imgInfo.uploadImgName == '')
-    		alert('图片名字为空！');
-
-    	if( $scope.imgInfo.uploadImgDesc == null || $scope.imgInfo.uploadImgDesc == '')
-    		alert('图片描述为空！');
-
-    	var media_id = we_uploadImage();
-    	imgInfo.aId = $scope.modalActivity;
-    	$http.post('api/image/upload/' + media_id, $scope.imgInfo).success(function(data){
+    $scope.uploadCallback = function(serverId) {
+    	var json = {
+    			uploadImgName:$scope.imgInfo.uploadImgName,
+    			uploadImgDesc:$scope.imgInfo.uploadImgDesc,
+    			aId:$scope.modalActivity
+    	}
+    	$http.post('api/image/upload/' + serverId[0], json).success(function(data){
+    		$scope.clean();
+    		alert(JSON.stringify(data));
+    		if( data.retcode == 0 )
+    			alert('图片上传成功！');
+    		else {
+    			alert('图片上传失败！');
+    		}
     	}).error(function(err){
-    		alert('请确保网络连接正常。');
-    	});
+    		alert(JSON.stringify(err));
+    		alert('请确保网络连接正常！');
+    	});  	
+    }
+
+    $scope.uploadImg = function() {
+    	if( $scope.imgInfo.uploadImgName == null || $scope.imgInfo.uploadImgName == '') {
+    		alert('图片名字为空！');
+    		return;
+    	}
+
+    	if( $scope.imgInfo.uploadImgDesc == null || $scope.imgInfo.uploadImgDesc == ''){
+    		alert('图片描述为空！');
+    		return;
+    	}
+
+    	var media_id = we_uploadImage($scope.uploadCallback);
+
     }
 });
 

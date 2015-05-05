@@ -90,7 +90,8 @@ public class ImagesController {
 	}
 	
 	@RequestMapping(value="/api/image/upload/{id}", method=RequestMethod.POST)
-	public @ResponseBody HashMap<String,Object> upload(HttpSession session, @PathVariable("id") int id, @RequestBody ImgUpload iu) {
+	public @ResponseBody HashMap<String,Object> upload(HttpSession session, @PathVariable("id") String id, @RequestBody ImgUpload iu) {
+		logger.debug("DOWNLOAD image from WeChat server: ");
 		HashMap<String, Object> h = new HashMap<String, Object>();
 		UserLite o = (UserLite)session.getAttribute("USER");
 		if( o == null) {
@@ -101,7 +102,7 @@ public class ImagesController {
 		String fileName = o.getId() + "_" + CommonUtils.md5(o.getNickname() + System.currentTimeMillis() + session.getId()) + ".jpg";
 		String thumb = "t_" + fileName;
 		String path = servletCtx.getRealPath("/") + AppConfig.UPLOADDIR + File.separator ;
-		String thumbpath = servletCtx.getRealPath("/") + AppConfig.UPLOADDIR + File.separator ; 
+		String thumbpath = servletCtx.getRealPath("/") + AppConfig.THUMBDIR + File.separator ; 
 		if( AuthUtils.downloadImage(id, path + fileName) ) {
 			AppConfig cfg = AppConfig.getConfig();
 			int size = Integer.parseInt(cfg.get(AppConfig.THUMBNAIL));
@@ -117,6 +118,7 @@ public class ImagesController {
 				iService.insertImg(img);
 				h.put("msg", "SUCCESS");
 				h.put("retcode", 0);
+				return h;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -78,7 +78,6 @@ public class EntryController {
 				int i = 0;
 				try{
 					ux = AuthUtils.getUserInfo(o.getOpenid(), o.getOauthToken());
-					logger.debug("User ID (update or insert): {}", i);
 				} catch(Exception e) {
 					e.printStackTrace();
 					return new ModelAndView("redirect:main");
@@ -86,7 +85,7 @@ public class EntryController {
 				String relative = AppConfig.HEADDIR + File.separator + o.getOpenid() + ".jpg";
 				String head = servletCtx.getRealPath("/") + relative;
 				try{ 
-					if( ux.getHeadimgurl() != null ) {
+					if( ux.getHeadimgurl() != null && ux.getHeadimgurl().trim().length() > 0) {
 						CommonUtils.downloadImg(ux.getHeadimgurl(), head);
 						ux.setHeadimgurl(relative);
 					} else
@@ -97,6 +96,7 @@ public class EntryController {
 				}
 
 				i = uService.updateOrInsert(ux);				
+				logger.debug("User ID (update or insert): {}", i);
 				UserLite ul = new UserLite();
 				ul.setId(i);
 				session.setAttribute("USER", ul);
@@ -124,6 +124,8 @@ public class EntryController {
 		model.put("timestamp", timestamp);
 		model.put("signature", signature);
 		model.put("appId", AuthUtils.appId);
+		logger.debug(" JS signature nonce("+nonce+") timestamp(" + timestamp + ") ticket({}) " + "signature(" + signature + ")", 
+				ticket, "http://m.idreamfactory.cn/main");
 		return new ModelAndView("index", model);
 	}
 

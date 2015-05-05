@@ -49,10 +49,10 @@ public interface UserImgMapper {
 	List<ImgComment> getImgComments(@Param("id") int imgId);	
 	
 	
-	@Insert("insert into userimg (name, description,imgurl,authorId,uploadTime,likes, "
+	@Insert("insert into userimg (name, description,authorId,uploadTime,likes, "
 			+ "shared, file, aid, thumb, comments) values "
-			+ "(#{name},#{description},#{imgurl},#{authorId},now(),#{likes}, #{shared},"
-			+ "#{file}, #{aid}, #{thumb}, #{comments})")
+			+ "(#{name},#{description},#{authorId},now(),#{likes}, #{shared},"
+			+ "#{file}, #{aId}, #{thumb}, #{comments})")
 	void insertUserImg(UserImg ui);
 	
 	@Select("select id, file, thumb from userimg where aid=#{id} order by id desc limit #{start}, #{limit}")

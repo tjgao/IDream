@@ -1,27 +1,41 @@
         
 var g_images = { localId:[], serverId:[]};
 
-var we_chooseImage = function() {
+var _curSel = '';
+
+var we_chooseImage = function(o) {
 	wx.chooseImage({
 		success: function(res) {
-			if( res.localId.length > 1 ) {
-				alert('请只选择一张图片');
-				return;
+			if( res.localIds.length > 1 ) {
+				alert('请只选择一张图片！');
+				_curSel = '';
+			} else {
+				g_images.localId = res.localIds;
+				_curSel = res.localIds[0];
+				o.currentSel = _curSel;
+				alert(o.uploadImgName);
+				alert(o.currentSel);
 			}
-			g_images.localId = res.localId;
+		},
+		fail:function(res) {
+			alert('选择图片失败！');
+			_curSel = '';
 		}
 	});
+	return _curSel;
 };
 
 var we_cleanImage = function() {
-	g_images = { localId:[], serverId:[]};
+	g_images.localId = [];
+	g_images.serverId = [];
 };
 
-var we_uploadImage = function() {
+var we_uploadImage = function( uploadCallback) {
 	if( g_images.localId.length == 0 ) {
 		return;
 	}
-	int i = 0, len = g_images.localId.length;
+	var i = 0; 
+	var len = g_images.localId.length;
 	function upload() {
 		wx.uploadImage({
 			localId:g_images.localId[i],
@@ -29,6 +43,7 @@ var we_uploadImage = function() {
 				i++;
 				g_images.serverId.push(res.serverId);
 				if( i < len ) upload();
+				uploadCallback(g_images.serverId);
 			},
 			fail: function(res) {
 				alert('上传失败！');

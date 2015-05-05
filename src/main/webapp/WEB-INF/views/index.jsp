@@ -6,13 +6,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
 
     <link href="resources/lib/css/ionic.min.css" rel="stylesheet">
     <link href="resources/css/style.css" rel="stylesheet">
 
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-    <link href="css/ionic.app.css" rel="stylesheet">
-    -->
 
     <!-- ionic/angularjs js -->
     <script src="resources/lib/js/ionic.bundle.min.js"></script>
@@ -24,16 +24,16 @@
     <script src="resources/js/app.js"></script>
     <script src="resources/js/controllers.js"></script>
     <script src="resources/js/services.js"></script>
-    <script src="resources/js/wechat.js"></script>
     
   <script type="text/javascript">
+	  	var g_images = { localId:[], serverId:[]};
   		var g_uId = '<% UserLite o = (UserLite)session.getAttribute("USER"); if(o==null) out.print(""); else out.print(o.getId()); %>';
   		
   		wx.config({
   			debug:true,
   			appId:'${appId}',
   			timestamp:${timestamp},
-  			nonce:'${nonce}',
+  			nonceStr:'${nonce}',
   			signature:'${signature}',
   			jsApiList:[
   				'onMenuShareTimeline',
@@ -45,7 +45,30 @@
   				'uploadImage'
   			]
   		});
+  		
+  		wx.ready(function(){
+  			wx.checkJsApi({
+  				jsApiList:[
+	  				'onMenuShareTimeline',
+	  				'onMenuShareAppMessage',
+	  				'onMenuShareQQ',
+	  				'onMenuShareWeibo',
+	  				'chooseImage',
+	  				'previewImage',
+	  				'uploadImage'
+  				],
+  				fail: function(res) {
+  					alert(JSON.stringify(res));
+  				}
+  			});
+  		});
+  		
+  		var we_chooseImage = null;
+  		var we_uploadImage = null;
+  		var we_cleanImage = null;
   </script>    
+
+    <script src="resources/js/wechat.js"></script>
   </head> 
   <body ng-controller="topController">
 
@@ -246,15 +269,14 @@
                     <label class="item item-input">
                         <textarea ng-model="imgInfo.uploadImgDesc"  placeholder="图片描述"/>
                     </label>
-                    <a class="item item-icon-left" href="#">
+                    <a class="item item-icon-left" ng-click="chooseImg()">
                         <i class="icon ion-image"></i>
                         选取图片
                     </a>
-                    <a class="item item-icon-left" href="#">
-                        <i class="icon ion-eye"></i>
-                        预览图片
-                    </a>
-                    <a class="item item-icon-left" href="#">
+					<div class="item item-thumbnail-left">
+					      <img ng-src="{{imgInfo.currentSel}}">
+					</div>
+                    <a class="item item-icon-left" ng-click="uploadImg()">
                         <i class="icon ion-upload"></i>
                         上传图片
                     </a>
