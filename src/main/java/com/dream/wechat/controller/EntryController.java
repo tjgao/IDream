@@ -10,10 +10,14 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import ch.qos.logback.classic.Logger;
 
@@ -38,17 +42,31 @@ public class EntryController {
 		
 	@RequestMapping(value = "/auth", method = RequestMethod.GET)
 	public ModelAndView auth(HttpSession session, @RequestParam(value="code", required=false) String code, 
-			@RequestParam(value="state", required=false) String state) {
+			@RequestParam(value="state", required=false) String state,
+			@RequestParam(value="auth_scope", required=false) String auth_scope,
+			@RequestParam(value="go", required=false) String go, final RedirectAttributes redirectAttributes) {
 		AppConfig cfg = AppConfig.getConfig();
+		boolean isSNSUserInfo = true;
+		if( auth_scope != null && auth_scope.equals(AuthUtils.basicAuthScope) )
+			isSNSUserInfo = false;
+
 		if( code == null && state == null ) {
 			if( session.getAttribute("USER") == null ) {
 				try {
-					String redirectUrl = String.format("redirect:%s?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect", 
-											AuthUtils.authRedirectURL, AuthUtils.appId, 
-											URLEncoder.encode("http://"+cfg.get(AppConfig.SERVERNAME) + "/auth","utf-8"),
-											AuthUtils.userInfoAuthScope, "m_idreamfactory_cn");
-					logger.debug("redirect url: {}", redirectUrl);
-					return new ModelAndView(redirectUrl);
+					StringBuffer sb = new StringBuffer();
+					StringBuffer url = new StringBuffer();
+					url.append("http://").append(cfg.get(AppConfig.SERVERNAME)).append("/auth");
+					if( go!=null&&go.length()>0) 
+						url.append("?go=").append(go);
+					sb.append("redirect:").append(AuthUtils.authRedirectURL).append("?appid=").append(AuthUtils.appId)
+					.append("&redirect_uri=").append(URLEncoder.encode(url.toString(), "utf-8"))
+					.append("&response_type=code&scope=").append(isSNSUserInfo?AuthUtils.userInfoAuthScope:AuthUtils.basicAuthScope)
+					.append("&state=m_idreamfactory_cn#wechat_redirect");
+//					String redirectUrl = String.format("redirect:%s?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect", 
+//											AuthUtils.authRedirectURL, AuthUtils.appId, 
+//											URLEncoder.encode("http://"+cfg.get(AppConfig.SERVERNAME) + "/auth","utf-8"),
+//											(isSNSUserInfo?AuthUtils.userInfoAuthScope:AuthUtils.basicAuthScope), "m_idreamfactory_cn");
+					return new ModelAndView(sb.toString());
 				} catch(Exception e) {
 					e.printStackTrace();
 					return new ModelAndView("redirect:main");
@@ -56,31 +74,40 @@ public class EntryController {
 			}
 		} 
 		else if( code != null && state.equals("m_idreamfactory_cn")) {
-			logger.debug("Redirected sucessfully");
+			ModelAndView m = new ModelAndView("redirect:main");
+			if( go != null && go.length() > 0)
+				session.setAttribute("go", go);
 			Oauth o = AuthUtils.getOauth(code);
 			if( o != null ) //wechat server gives proper respond
 			{
-				User u = uService.getUser(o.getUserId());
-				User ux = null;
+				User u = uService.getUserByOpenid(o.getOpenid());
 				if( u != null )  //user already exists in db
 				{
+					logger.debug("Registered user log in");
 					long diff = (System.currentTimeMillis() - u.getUpdateTime().getTime());
 					diff = ( diff > 0 ) ? diff : -diff;
 					int hours = Integer.parseInt(cfg.get(AppConfig.USERUPDATETIME));
-					if( diff < hours * 3600 * 1000 ) { //if user info is still fresh, let it go
+					if( diff < hours * 3600 * 1000 ) { //if user info is still fresh, let him go
 						UserLite ul = new UserLite();
 						ul.setId(u.getId());
 						session.setAttribute("USER", ul);
-						return new ModelAndView("redirect:main");
+						return m;
 					}
 				} 
+				else{
+					// Not a registered user and not snsapi_userinfo scope
+					if( !isSNSUserInfo ) 
+						return m;
+					 
+				}
 				//otherwise, no matter it is a new user or an user info update, the following needs to be done
 				int i = 0;
+				User ux = null;
 				try{
 					ux = AuthUtils.getUserInfo(o.getOpenid(), o.getOauthToken());
 				} catch(Exception e) {
 					e.printStackTrace();
-					return new ModelAndView("redirect:main");
+					return m;
 				}
 				String relative = AppConfig.HEADDIR + File.separator + o.getOpenid() + ".jpg";
 				String head = servletCtx.getRealPath("/") + relative;
@@ -88,8 +115,9 @@ public class EntryController {
 					if( ux.getHeadimgurl() != null && ux.getHeadimgurl().trim().length() > 0) {
 						CommonUtils.downloadImg(ux.getHeadimgurl(), head);
 						ux.setHeadimgurl(relative);
-					} else
+					} else {
 						ux.setHeadimgurl(AppConfig.HEADDIR + File.separator + "default.jpg");
+					}
 				} catch(Exception e) {
 					e.printStackTrace();
 					ux.setHeadimgurl(AppConfig.HEADDIR + File.separator + "default.jpg");
@@ -100,13 +128,21 @@ public class EntryController {
 				UserLite ul = new UserLite();
 				ul.setId(i);
 				session.setAttribute("USER", ul);
+				return m;
 			} 
 		} 
-		return new ModelAndView("redirect:main");
+		ModelAndView m = new ModelAndView("redirect:main");
+		if( go != null && go.length() > 0)
+			session.setAttribute("go", go);
+		return m;
 	}
 	
+
+	
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public ModelAndView main() {
+	public ModelAndView main(HttpSession session ) {
+		String go = (String)session.getAttribute("go");
+		//generate signature for jssdk
 		String nonce = AuthUtils.genRandomString(10);
 		String timestamp = Long.toString(System.currentTimeMillis()/1000);
 		String ticket = null;
@@ -119,14 +155,20 @@ public class EntryController {
 		String signature = AuthUtils.genJsSignature(nonce, ticket, 
 				timestamp, "http://m.idreamfactory.cn/main");
 		
-		HashMap<String,String> model = new HashMap<String,String>();
-		model.put("nonce", nonce);
-		model.put("timestamp", timestamp);
-		model.put("signature", signature);
-		model.put("appId", AuthUtils.appId);
-		logger.debug(" JS signature nonce("+nonce+") timestamp(" + timestamp + ") ticket({}) " + "signature(" + signature + ")", 
-				ticket, "http://m.idreamfactory.cn/main");
-		return new ModelAndView("index", model);
+		HashMap<String,String> map = new HashMap<String,String>();
+		map.put("nonce", nonce);
+		map.put("timestamp", timestamp);
+		map.put("signature", signature);
+		map.put("appId", AuthUtils.appId);
+		if( go != null ) {
+			map.put("go", go);
+			session.removeAttribute("go");
+		}
+
+		UserLite ul = new UserLite();
+		ul.setId(2);
+		session.setAttribute("USER", ul);
+		return new ModelAndView("index", map);
 	}
 
 }

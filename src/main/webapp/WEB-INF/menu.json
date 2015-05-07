@@ -1,19 +1,19 @@
 {
 	"button":[
 		{
-			"name":"所有活动",
+			"name":"梦工厂",
 			"type":"view",
-			"url":"http://m.idreamfactory.cn/activities.do"
+			"url":"http://m.idreamfactory.cn/auth"
 		},
 		{
 			"name":"我要参加",
 			"type":"view",
-			"url":"http://m.idreamfactory.cn/countMeIn.do"
+			"url":"http://m.idreamfactory.cn/auth"
 		},
 		{
-			"name":"『我的』",
+			"name":"我的梦",
 			"type":"view",
-			"url":"http://m.idreamfactory.cn/myStuff.do"
+			"url":"http://m.idreamfactory.cn/auth"
 		}
 	]
 }

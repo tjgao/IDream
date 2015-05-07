@@ -172,7 +172,6 @@ public class AuthUtils {
 		String ref = String.format("%s?access_token=%s&openid=%s&lang=zh_CN", snsUserInfoURL, token, openid);
 		String ret = HttpsRequest(ref);
 		ObjectMapper mapper = new ObjectMapper();
-		logger.debug("WeChat response for user info query: {}", ret);
 		HashMap<String, Object> obj = mapper.readValue(ret.getBytes("utf-8"), new TypeReference<HashMap<String,Object>>(){});
 		if( obj.get("errcode")!=null) {
 			logger.info("Fail to get user info, error code:{}, errmsg:{}", obj.get("errcode"), obj.get("errmsg"));
@@ -262,7 +261,6 @@ public class AuthUtils {
 					logger.debug("Download image file fail:  {}", resp);
 				}
 			}
-			fs.close(); in.close();
 			conn.disconnect();
 		} catch (Exception e) {
 			e.printStackTrace();

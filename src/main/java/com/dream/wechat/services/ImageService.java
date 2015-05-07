@@ -34,8 +34,8 @@ public class ImageService {
 		uiMapper.plusLikes(imgId);
 	}
 	
-	public List<UserImg> getHottestTop10() {
-		return uiMapper.getHottestTop10();
+	public List<UserImg> getHottestTopN(int n) {
+		return uiMapper.getHottestTopN(n);
 	}
 	
 	public void insertImg(UserImg u) {

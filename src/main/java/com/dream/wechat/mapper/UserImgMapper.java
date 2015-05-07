@@ -35,7 +35,7 @@ public interface UserImgMapper {
 	@Insert("insert into imglike (imgid, userid, createtime) values (#{imgId}, #{userId}, now())")
 	void putLikes(@Param("imgId") int imgId, @Param("userId") int uId);
 	
-	@Insert("insert into imgcomment (imgid, userid, createtime, content) values "
+	@Insert("insert into imgComment (imgid, userid, createtime, content) values "
 			+ "(#{imgId}, #{userId}, now(), #{content})")
 	int putComment(ImgComment com);
 	
@@ -44,7 +44,7 @@ public interface UserImgMapper {
 	
 	@Select("select a.id as id, a.imgId as imgId, a.createtime as createtime,"
 			+ "a.content as content, a.userId as userId, b.nickname as username,"
-			+ "b.sex as usersex, b.headimgurl as userhead from imgcomment as a,user as b "
+			+ "b.sex as usersex, b.headimgurl as userhead from imgComment as a,user as b "
 			+ "where a.userId = b.id and a.imgId=#{id} order by id desc")
 	List<ImgComment> getImgComments(@Param("id") int imgId);	
 	
@@ -67,6 +67,6 @@ public interface UserImgMapper {
 	@Select("select id, file, thumb from userimg where authorid = #{id} order by likes desc limit #{start}, #{limit}")
 	List<Thumb> getHottestThumbsByUser(@Param("id") int id, @Param("start") int start, @Param("limit") int limit);
 	
-	@Select("select id, name, description, file, thumb from userimg order by likes, comments, shared, id desc limit 10")
-	List<UserImg> getHottestTop10() ;
+	@Select("select id, name, description, file, thumb from userimg order by likes, comments, shared, id desc limit #{n}")
+	List<UserImg> getHottestTopN(@Param("n") int n) ;
 }

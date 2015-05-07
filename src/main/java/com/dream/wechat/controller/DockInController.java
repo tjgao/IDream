@@ -19,6 +19,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -87,13 +88,22 @@ public class DockInController {
 	
 	// Prepare news 
 	private String replySubscribe(String me, String openid) throws Exception {
-		List<UserImg> ul = iService.getHottestTop10();
+		List<UserImg> ul = iService.getHottestTopN(4);
+		String p = servletCtx.getRealPath("/") + "WEB-INF" + File.separator + "message.xml";
+
 		WeChatXML m = new WeChatXML();
-		m.setRoot("xml");
+		try{
+			String s = IOUtils.toString(new FileInputStream(new File(p)), "utf-8");
+			m = WeChatXML.fromXML(s);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
 		m.addCDATA("FromUserName", me);
 		m.addCDATA("ToUserName", openid);
 		m.addText("CreateTime", Long.toString(System.currentTimeMillis()/1000));
 		m.addCDATA("MsgType", WeChatXML.NEWS_MSG);
+		
 		for( UserImg i : ul ) {
 			WeChatXML ai = new WeChatXML();
 			ai.setRoot("item");
@@ -104,9 +114,10 @@ public class DockInController {
 			m.addItem("Articles", ai);
 		}
 
-		m.addText("ArticleCount", Integer.toString(ul.size()));
+		m.addText("ArticleCount", Integer.toString(ul.size()+2));
 		return m.toXML();
 	}
+
 	
 	@RequestMapping(value = "/dockIn.do", method = RequestMethod.GET)
 	public @ResponseBody String dockIn(@RequestParam("signature") String signature, 

@@ -13,8 +13,6 @@ var we_chooseImage = function(o) {
 				g_images.localId = res.localIds;
 				_curSel = res.localIds[0];
 				o.currentSel = _curSel;
-				alert(o.uploadImgName);
-				alert(o.currentSel);
 			}
 		},
 		fail:function(res) {

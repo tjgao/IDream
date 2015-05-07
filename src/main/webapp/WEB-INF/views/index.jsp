@@ -27,10 +27,9 @@
     
   <script type="text/javascript">
 	  	var g_images = { localId:[], serverId:[]};
-  		var g_uId = '<% UserLite o = (UserLite)session.getAttribute("USER"); if(o==null) out.print(""); else out.print(o.getId()); %>';
-  		
+		var g_uId = '${sessionScope.USER.id}'
   		wx.config({
-  			debug:true,
+  			debug:false,
   			appId:'${appId}',
   			timestamp:${timestamp},
   			nonceStr:'${nonce}',
@@ -58,7 +57,7 @@
 	  				'uploadImage'
   				],
   				fail: function(res) {
-  					alert(JSON.stringify(res));
+  					alert('很遗憾，你的微信版本较低，此应用的一些功能将受到限制！');
   				}
   			});
   		});
@@ -66,11 +65,12 @@
   		var we_chooseImage = null;
   		var we_uploadImage = null;
   		var we_cleanImage = null;
+  		var init_url="${go}";
   </script>    
 
     <script src="resources/js/wechat.js"></script>
   </head> 
-  <body ng-controller="topController">
+  <body >
 
   <ion-nav-view name="mainView"></ion-nav-view>
 
@@ -83,9 +83,9 @@
 	                   <div class="col avatar-frame-small force-no-padding">
 	                        <div class="row force-no-padding">
 	                            <div class="col-fixed-40 force-no-padding">
-								<a href="#/activity/{{a.id}}/latest"><img ng-src="{{a.logo}}"></a>
+								<a href="#/activity/{{a.id}}"><img ng-src="{{a.logo}}"></a>
 	                            </div>
-	                            <div class="col force-no-padding-left15">
+	                            <div class="col force-no-padding-left15" ng-click="checkit({{a.id}})">
 	                                <div class="row force-no-padding">
 	                                <h2>{{a.name}}</h2>
 	                                </div>
@@ -124,7 +124,7 @@
 	                                <h2>{{image.authorName}} <i ng-if="image.authorSex==1" class="icon ion-male"></i><i ng-if="image.authorSex==2" class="icon ion-female"></i></h2>
 	                                </div>
 	                                <div class="row force-no-padding-top5">
-	                                <p>{{image.uploadTime | date:'yyyy-MM-dd HH:mm:ss'}}</p>
+	                                <p class="white-font">{{image.uploadTime | date:'yyyy-MM-dd HH:mm:ss'}}</p>
 	                                </div>
 	                            </div>
 	                        </div>
@@ -134,20 +134,16 @@
                 <a href='#/image/{{image.id}}'>
                 <img class="full-image" ng-src="{{image.file}}"/>
                 </a>
-                <p>{{image.description}}</p>
+                <p class="white-font">{{image.description}}</p>
             </div>
             <div class="item item-body tabs tabs-secondary tabs-icon-left" ng-repeat-end>
                 <a class="tab-item" href="#/image/{{image.id}}">
                 <i class="icon ion-thumbsup"></i>
-                ({{image.likes}})
+                ({{image.likes}})&nbsp;梦想币
                 </a>
                 <a class="tab-item" href="#/image/{{image.id}}">
                 <i class="icon ion-chatbox"></i>
                 ({{image.comments}})
-                </a>
-                <a class="tab-item" href="#/image/{{image.id}}">
-                <i class="icon ion-share"></i>
-                ({{image.shared}})
                 </a>
             </div>
             <div class="item">
@@ -160,20 +156,25 @@
 
     <script id="templates/entry.html" type="text/ng-template">
     <ion-tabs class="tabs-top tabs-striped has-nothing-top">
-        <ion-tab title="热点" href="#/entry/activities">
+        <ion-tab title="热点" icon="ion-ios-lightbulb-outline" href="#/entry/activities">
         <ion-nav-view  class="has-small-tabs-top" name="tab-activities"></ion-nav-view>
         </ion-tab>
-        <ion-tab title="关注" href="#/entry/interestedImg/{{t_uId}}">
+        <ion-tab title="关注" icon="ion-ios-search" href="#/entry/interestedImg/{{t_uId}}">
         <ion-nav-view  class="has-small-tabs-top" name="tab-interested"></ion-nav-view>
         </ion-tab>
     </ion-tabs>
       <div class="bar bar-footer" hide-on-scroll="true" >
           <div class="tabs">
               <a class="tab-item" href="#/entry/activities">
-                  所有活动 
+                 <i class="icon ion-ios-home-outline"></i>&nbsp;梦工厂 
               </a>
-              <a class="tab-item" href="#/people/{{t_uId}}/activities" >
-                  『我的』             
+<!--
+			  <a class="tab-item" href="#/upload">
+				 <i class="icon ion-ios-plus-outline"></i>&nbsp;我要参加
+			  </a>
+-->
+              <a class="tab-item" href="#/people/${sessionScope.USER.id}/activities" >
+                  <i class="icon ion-ios-person-outline"></i>&nbsp;我的梦             
               </a>
           </div>    
       </div>
@@ -184,8 +185,6 @@
                 <div class="button button-clear" ng-click="goBack()">
                 <span class="icon ion-arrow-left-c"></span></div>
                 <h1 class="title">{{image.name}}</h1>
-                <div class="button button-clear" ng-click="showActionSheet()">
-                <span class="ion ion-share"></span></div>
             </header>
             <ion-content class="has-small-tabs-top" padding="true">
                 <div class="list card ">
@@ -196,11 +195,11 @@
 								<a href="#/people/{{image.authorId}}/activities"><img ng-src="{{image.authorHead}}"></a>
 	                            </div>
 	                            <div class="col force-no-padding-left15">
-	                                <div class="row force-no-padding">
+	                                <div class="row force-no-padding-ppl">
 	                                <h2>{{image.authorName}} <i ng-if="image.authorSex==1" class="icon ion-male"></i><i ng-if="image.authorSex==2" class="icon ion-female"></i></h2>
 	                                </div>
 	                                <div class="row force-no-padding-top5">
-	                                <p>{{image.uploadTime | date:'yyyy-MM-dd HH:mm:ss'}}</p>
+	                                <p class="white-font">{{image.uploadTime | date:'yyyy-MM-dd HH:mm:ss'}}</p>
 	                                </div>
 	                            </div>
 	                        </div>
@@ -208,12 +207,11 @@
 					</div>
                     <div class="item item-body">
                         <img class="full-image" ng-src="{{image.file}}"/>
-                        <p>{{image.description}}</p>
+                        <p class="white-font">{{image.description}}</p>
                     </div>
                     <div class="item tabs tabs-secondary tabs-icon-left">
-                        <a class="tab-item" ng-click="like()"><i class="icon ion-thumbsup"></i> ({{image.likes}})</a>
+                        <a class="tab-item" ng-click="like()"><i class="icon ion-thumbsup"></i> ({{image.likes}}) 梦想币</a>
                         <a class="tab-item"><i class="icon ion-chatbox"></i> ({{image.comments}})</a>
-                        <a ng-click="showActionSheet()" class="tab-item"><i class="icon ion-share"></i> ({{image.shared}})</a>
                     </div>
                 </div>
                 <div class="card">
@@ -222,12 +220,9 @@
                         <div class="list">
                           <div class="item item-input-inset">
                             <label class="item-input-wrapper">
-                              <input ng-maxlength="200" ng-minlength="5" style="width:100%;" type="text" ng-model="comment.content" placeholder="限200字"></input>
+                              <input ng-maxlength="200" style="width:100%;" type="text" ng-model="comment.content" placeholder="限200字"></input>
                             </label>
-							<div ng-messages="comment.$error" style="color:maroon" role="alert">
-							  <div ng-message="minlength">评论不得少于5字</div>
-							  <div ng-message="maxlength">评论不得超过200字</div>
-							</div>
+
                             <button class="button button-small" ng-click="submitComment()">
                                 提交
                             </button>
@@ -259,43 +254,74 @@
             <header class="bar bar-header">
                 <div class="button button-clear" ng-click="exitUpload()">
                 <span class="icon ion-close"></span></div>
-                <h1 class="title">上传照片</h1>
+                <h1 class="title"><i class="icon ion-ios-camera-outline"></i>&nbsp;上传图片</h1>
             </header>
-            <ion-content class="has-small-tabs-top" has-header="true" padding="true">
+            <ion-content class="has-small-tabs-top number-line" has-header="true" padding="true">
                 <div class="list">
-                    <label class="item item-input">
-                        <input ng-model="imgInfo.uploadImgName" type="text" placeholder="图片名字"/>
-                    </label>
-                    <label class="item item-input">
-                        <textarea ng-model="imgInfo.uploadImgDesc"  placeholder="图片描述"/>
-                    </label>
-                    <a class="item item-icon-left" ng-click="chooseImg()">
+                   <p class="upload-text">开始</p>
+<!--
+					<select class="dream-select">
+   						<option value="青春·毕业梦">青春·毕业梦</option>
+  						 <option value="青春·恋爱梦">青春·恋爱梦</option>
+						 <option value="青春·旅行梦">青春·旅行梦</option>
+						 <option value="青春·创业梦">青春·创业梦</option>
+						 <option value="青春·冒险梦">青春·冒险梦</option>
+						 <option value="青春·美食梦">青春·美食梦</option>
+					</select> 
+-->
+					<p>&nbsp;</p>
+					<p>&nbsp;</p>
+					<a class="item item-icon-left" ng-click="chooseImg()">
                         <i class="icon ion-image"></i>
-                        选取图片
+                        选取梦想画面
                     </a>
-					<div class="item item-thumbnail-left">
-					      <img ng-src="{{imgInfo.currentSel}}">
-					</div>
+					<!--<div class="item item-thumbnail-left">-->
+					      <!--<img ng-src="{{imgInfo.currentSel}}">-->
+					<!--</div>-->
+					<p>&nbsp;</p>
+					<p class="upload-text">我的梦想是</p>
+                    <label class="item item-input">
+                        <input ng-model="imgInfo.uploadImgName" type="text" placeholder="梦想标题"/>
+                    </label>
+                    <label class="item item-input">
+                        <textarea ng-model="imgInfo.uploadImgDesc"  placeholder="梦想描述"/>
+                    </label>
+                    
                     <a class="item item-icon-left" ng-click="uploadImg()">
                         <i class="icon ion-upload"></i>
-                        上传图片
+                        上传梦想
                     </a>
                 </div>
             </ion-content>
         </div>
+      <div class="bar bar-footer" hide-on-scroll="true" >
+          <div class="tabs">
+              <a class="tab-item" href="#/entry/activities">
+                 <i class="icon ion-ios-home-outline"></i>&nbsp;梦工厂 
+              </a>
+<!--
+			  <a class="tab-item" href="#/upload">
+				 <i class="icon ion-ios-plus-outline"></i>&nbsp;我要参加
+			  </a>
+-->
+              <a class="tab-item" href="#/people/{{t_uId}}/activities" >
+                  <i class="icon ion-ios-person-outline"></i>&nbsp;我的梦             
+              </a>
+          </div>    
+      </div>
     </script>
 
     <script id="templates/people.html" type="text/ng-template">
         <ion-content class="has-nothing-top" hide-nav-bar="true" header-shrink  has-bouncing="false">
       <div class="list card" class="has-nothing-top">
          <div class="item item-body" style="text-align:center;">
-            <div class="avatar-frame">
+            <div class="avatar-frame frame-person">
             <img ng-src="{{user.headImg}}">
             </div>
             <h2>{{user.nickname}} <i ng-if="user.sex==1" class="icon ion-male"></i><i ng-if="user.sex==2" class="icon ion-female"></i></i>&nbsp;</h2>
-            <p><i class="icon ion-thumbsup"></i>&nbsp;({{userStatus.totalLikes}})&nbsp;&nbsp;
-			<button ng-if="showBtn && (amIFollowing.result==0)" class="button button-small icon-let" ng-click="follow()"><i class="icon ion-plus"></i>&nbsp;关注</button></p>
-			<button ng-if="showBtn && (amIFollowing.result!=0)" class="button button-small icon-let" ng-click="unfollow()"><i class="icon ion-minus-circled"></i>&nbsp;取消关注</button></button></p>
+            <p class="white-font"><i class="icon ion-thumbsup"></i>&nbsp;({{userStatus.totalLikes}})&nbsp;梦想币
+			<button ng-if="showBtn && (amIFollowing.result==0)" class="button button-small icon-let" ng-click="follow({{user.id}})"><i class="icon ion-plus"></i>&nbsp;关注</button></p>
+			<button ng-if="showBtn && (amIFollowing.result!=0)" class="button button-small icon-let" ng-click="unfollow({{user.id}})"><i class="icon ion-minus-circled"></i>&nbsp;取消关注</button></button></p>
          </div>
         <div class="item item-body tabs ">
             <a class="tab-item" href="#/people/{{p_uId}}/activities">活动&nbsp;({{userStatus.totalActivities}})</a>
@@ -309,10 +335,15 @@
       <div class="bar bar-footer" hide-on-scroll="true" >
           <div class="tabs">
               <a class="tab-item" href="#/entry/activities">
-                  所有活动 
+                  <i class="icon ion-ios-home-outline"></i> 梦工厂 
               </a>
+<!--
+			  <a class="tab-item" href="#/upload">
+				 <i class="icon ion-ios-plus-outline"></i>&nbsp;我要参加
+			  </a>
+-->
               <a class="tab-item" href="#/people/{{me}}/activities" >
-                  『我的』             
+                  <i class="icon ion-ios-person-outline"></i> 我的梦             
               </a>
           </div>    
       </div>
@@ -326,7 +357,7 @@
                        <div class="col avatar-frame-small force-no-padding">
                             <div class="row force-no-padding">
                                 <div class="col-fixed-40 force-no-padding">
-                                <a href="#/activity/{{a.id}}/latest"><img ng-src="{{a.logo}}"></a>
+                                <a href="#/activity/{{a.id}}"><img ng-src="{{a.logo}}"></a>
                                 </div>
                                 <div class="col force-no-padding-left15">
                                     <div class="row force-no-padding">
@@ -378,8 +409,8 @@
                                 	<p><i ng-if="user.sex==1" class="icon ion-male"></i><i ng-if="user.sex==2" class="icon ion-female"></i></p>
                                 </div>
                             </div>
-							<div class="force-no-padding-left15" style="text-align: right">
-								<button class="button button-striped" ng-click="unfollow({{user.id}})"><i class="icon ion-minus-circled"></i>&nbsp;取消关注</button>
+							<div class="force-no-padding-left15" style="text-align: right" >
+								<button ng-show="me != '' && me == p_uId" class="button button-striped" ng-click="unfollow({{user.id}})"><i class="icon ion-minus-circled"></i>&nbsp;取消关注</button>
 							</div>
                         </div>
 					</div>
@@ -407,8 +438,8 @@
                                 	<p><i ng-if="user.sex==1" class="icon ion-male"></i><i ng-if="user.sex==2" class="icon ion-female"></i></p>
                                 </div>
                             </div>
-							<div class="force-no-padding-left15" style="text-align: right">
-								<button class="button button-striped" ng-click="follow({{user.id}})"><i class="icon ion-minus-circled"></i>&nbsp;关注</button>
+							<div class="force-no-padding-left15" style="text-align: right" ng-if="me == p_uId">
+								<button ng-show="me != '' && me==p_uId" class="button button-striped" ng-click="follow({{user.id}})"><i class="icon ion-minus-circled"></i>&nbsp;关注</button>
 							</div>
                         </div>
 					</div>
@@ -423,17 +454,15 @@
           <div class="button button-clear" ng-click="goBack()">
           <span class="icon ion-arrow-left-c"></span></div>
           <h1 class="title">{{activity.name}}</h1>
-          <div class="button button-clear" ng-click="showActionSheet()">
-          <span class="ion ion-share"></span></div>
       </header>
       <div class="bar bar-footer" hide-on-scroll="true" >
-          <div class="button button-clear" ng-click="">
+          <div class="button button-clear" ng-click="prev()">
           <span class="icon ion-chevron-left"></span></div>
           <h1 class="title">
-          <div class="button button-clear" ng-click="">
+          <div class="button button-clear" ng-click="uploadDlg(activity.id)">
           <span class="icon ion-plus-round"></span></div>
           </h1>
-          <div class="button button-clear" ng-click="">
+          <div class="button button-clear" ng-click="next()">
           <span class="icon ion-chevron-right"></span></div>
       </div>
         <ion-content class="has-small-tabs-top" hide-nav-bar="true" header-shrink  has-bouncing="false">
@@ -442,15 +471,66 @@
             <div class="avatar-frame">
             <img ng-src="{{activity.logo}}">
             </div>
-            <p>{{activity.description}}</p>
+            <p class="white-font">{{activity.description}}</p>
          </div>
         <div class="item item-body tabs ">
-            <a class="tab-item" href="#/activity/{{aId}}/latest">最新作品</a>
-            <a class="tab-item" href="#/activity/{{aId}}/hottest">最热作品</a>
+            <a class="tab-item" ng-click="showTab('latest')"><i class="icon-s ion-ios-refresh-outline"></i>&nbsp; 最新作品</a>
+            <a class="tab-item" ng-click="showTab('hottest')"><i class="icon-s ion-ios-lightbulb-outline"></i>&nbsp; 最热作品</a>
         </div>
       </div>
-      <ion-nav-view name="actThumbView" ></ion-nav-view>
-        </ion-content>		
+          <div class="row" ng-repeat="t in thumbs">
+              <div class="col" ng-if="$index%3==0"><a href="#/image/{{thumbs[$index].id}}"><img class="full-image" ng-src="{{thumbs[$index].thumb}}"/></a></div>
+              <div class="col" ng-if="$index%3==0"><a href="#/image/{{thumbs[$index+1].id}}"><img class="full-image" ng-src="{{thumbs[$index+1].thumb}}"/></a></div>
+              <div class="col" ng-if="$index%3==0"><a href="#/image/{{thumbs[$index+2].id}}"><img class="full-image" ng-src="{{thumbs[$index+2].thumb}}"/></a></div>
+          </div>	
+	</script>
+	
+	<script id="templates/uploadBg.html" type="text/ng-template">
+	</script>
+	
+	<script id="templates/upload.html" type="text/ng-template">
+            <header class="bar bar-header">
+                <div class="button button-clear" ng-click="exitUpload()">
+                <span class="icon ion-close"></span></div>
+                <h1 class="title"><i class="icon ion-ios-camera-outline"></i>&nbsp;上传图片</h1>
+            </header>
+            <ion-content class="has-small-tabs-top number-line" has-header="true" padding="true">
+                <div class="list">
+                   <p class="upload-text">选择活动</p>
+<!--
+					<select class="dream-select">
+   						<option value="青春·毕业梦">青春·毕业梦</option>
+  						 <option value="青春·恋爱梦">青春·恋爱梦</option>
+						 <option value="青春·旅行梦">青春·旅行梦</option>
+						 <option value="青春·创业梦">青春·创业梦</option>
+						 <option value="青春·冒险梦">青春·冒险梦</option>
+						 <option value="青春·美食梦">青春·美食梦</option>
+					</select> 
+-->
+					<p>&nbsp;</p>
+					<p>&nbsp;</p>
+					<a class="item item-icon-left" ng-click="chooseImg()">
+                        <i class="icon ion-image"></i>
+                        选取梦想画面
+                    </a>
+					<!--<div class="item item-thumbnail-left">-->
+					      <!--<img ng-src="{{imgInfo.currentSel}}">-->
+					<!--</div>-->
+					<p>&nbsp;</p>
+					<p class="upload-text">我的梦想是</p>
+                    <label class="item item-input">
+                        <input ng-model="imgInfo.uploadImgName" type="text" placeholder="梦想标题"/>
+                    </label>
+                    <label class="item item-input">
+                        <textarea ng-model="imgInfo.uploadImgDesc"  placeholder="梦想描述"/>
+                    </label>
+                    
+                    <a class="item item-icon-left" ng-click="uploadImg()">
+                        <i class="icon ion-upload"></i>
+                        上传梦想
+                    </a>
+                </div>
+            </ion-content>
 	</script>
   </body>
 </html>

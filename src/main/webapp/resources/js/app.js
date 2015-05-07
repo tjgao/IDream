@@ -1,14 +1,7 @@
-// Ionic Starter App
-
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
 var app = angular.module('starter', ['ionic','dreamControllers','dreamServices']);
 
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
@@ -19,13 +12,25 @@ app.run(function($ionicPlatform) {
 })
 
 app.config(function($stateProvider, $urlRouterProvider){
+//	$stateProvider
+//    .state('upload', {
+//    	url:'/upload',
+//    	views:{
+//    		'mainView':{
+//    			templateUrl:'templates/upload.html',
+//    			controller:'upController'
+//    		}
+//    	}
+//    });
+//	
     $stateProvider
     .state('entry', {
         url:'/entry',
         abstract:true,
         views: {
             'mainView':{
-            	templateUrl:'templates/entry.html'
+            	templateUrl:'templates/entry.html',
+                controller:'topController'
             }
         }
     })
@@ -60,24 +65,7 @@ app.config(function($stateProvider, $urlRouterProvider){
             }
         }
     })
-    .state('activity.latest', {
-    	url:'/latest',
-    	views: {
-    		'actThumbView': {
-    			templateUrl:'templates/thumbs.html',
-    			controller:'actLatestController'
-    		}
-    	}
-    })
-    .state('activity.hottest',{
-    	url:'/hottest',
-    	views: {
-    		'actThumbView':{
-    			templateUrl:'templates/thumbs.html',
-    			controller:'actHottestController'
-    		}
-    	}
-    })
+
     ;
     
     $stateProvider
@@ -116,8 +104,7 @@ app.config(function($stateProvider, $urlRouterProvider){
         url:'/photos',
         views: {
             'statusView':{
-                templateUrl:'templates/thumbs.html',
-                controller:'pplPhotosController'
+                templateUrl:'templates/thumbs.html'
             }
         }
     })

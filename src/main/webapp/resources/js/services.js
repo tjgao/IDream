@@ -61,4 +61,48 @@ dreamServices.factory('AmIFollowingHer', function($resource){
 	return $resource('api/:me/follow/:her', {me:'@me', her:'@her'});
 });
 
+dreamServices.factory('shareService', function(){
+	return {
+		shareApp: function(msg, func1, func2) {
+			wx.onMenuShareAppMessage({
+				title:msg.title,
+				desc:msg.desc,
+				link:msg.link,
+				imgUrl:msg.url,
+				success:func1,
+				fail:func2
+			});
+		},
+		shareTimeline: function(msg, func1, func2) {
+			wx.onMenuShareTimeline({
+				title:msg.title,
+				link:msg.link,
+				imgUrl:msg.url,
+				success:func1,
+				fail:func2
+			});
+		},
+		shareQQ: function(msg, func1, func2) {
+			wx.onMenuShareQQ({
+				title:msg.title,
+				link:msg.link,
+				desc:msg.desc,
+				imgUrl:msg.url,
+				success:func1,
+				fail:func2
+			});
+		},
+		shareWeibo: function(msg, func1, func2) {
+			wx.onMenuShareWeibo({
+				link:msg.link,
+				title:msg.title,
+				desc:msg.desc,
+				imgUrl:msg.url,
+				success:func1,
+				fail:func2
+			});
+		}
+	};
+})
+
 

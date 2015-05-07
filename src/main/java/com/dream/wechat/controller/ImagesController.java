@@ -82,7 +82,7 @@ public class ImagesController {
 			h.put("retcode", 0);
 			h.put("msg", "SUCCESS");
 		} catch(Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			h.put("msg", "FAILURE");
 			h.put("retcode", -1);			
 		}
@@ -91,7 +91,6 @@ public class ImagesController {
 	
 	@RequestMapping(value="/api/image/upload/{id}", method=RequestMethod.POST)
 	public @ResponseBody HashMap<String,Object> upload(HttpSession session, @PathVariable("id") String id, @RequestBody ImgUpload iu) {
-		logger.debug("DOWNLOAD image from WeChat server: ");
 		HashMap<String, Object> h = new HashMap<String, Object>();
 		UserLite o = (UserLite)session.getAttribute("USER");
 		if( o == null) {

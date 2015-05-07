@@ -21,7 +21,7 @@ public interface ImgCommentMapper {
 	
 	@Select("select a.id, a.imgId as imgId, a.createtime as createtime,"
 			+ "a.content as content, a.userId as userId, b.nickname as username,"
-			+ "b.sex as usersex, b.headimgurl as userhead from imgcomment as a,user as b "
+			+ "b.sex as usersex, b.headimgurl as userhead from imgComment as a,user as b "
 			+ "where a.userId = b.id and a.imgId=#{id}")
 	List<ImgComment> getImgCommentsByImageId(@Param("id") int imgId);
 }

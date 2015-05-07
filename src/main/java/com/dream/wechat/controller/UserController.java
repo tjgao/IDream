@@ -77,6 +77,10 @@ public class UserController {
 			return h;
 		}
 		try{
+			if( o.getId() == followed) {
+				h.put("retode", -3);
+				h.put("msg", "CANNOT FOLLOW YOUSELF");
+			}
 			uService.follow(o.getId(), followed);
 			h.put("retcode", 0);
 			h.put("msg", "SUCCESS");
@@ -98,8 +102,15 @@ public class UserController {
 			h.put("retcode", -2);
 			return h;
 		}
+		System.out.println(o.getId() + " unfollow + " + followed);
+		if( o.getId() == followed ) {
+			h.put("msg", "CANNOT UNFOLLOW YOURSELF");
+			h.put("retcode", -3);
+			return h;
+		}
 		try{
-			uService.unfollow(o.getId(), followed);
+			int x = uService.unfollow(o.getId(), followed);
+			System.out.println(o.getId()+" unfollow "+ followed + " : "+ x);
 			h.put("retcode", 0);
 			h.put("msg", "SUCCESS");
 		}catch(Exception e) {

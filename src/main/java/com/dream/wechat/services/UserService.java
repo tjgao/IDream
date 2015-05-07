@@ -28,7 +28,6 @@ public class UserService  {
 	}
 	
 	public int updateOrInsert(User u) {
-		Integer i = null;
 		try{
 			if( u.getSubscribe() == 0 && u.getSubscribe_time() == 0 )
 				mapper.updateUserPartByOpenid(u);
@@ -37,7 +36,7 @@ public class UserService  {
 			return mapper.getUserByOpenid(u.getOpenId()).getId();
 		} catch (Exception e) {
 			e.printStackTrace();
-			i = mapper.insertUser(u);
+			mapper.insertUser(u);
 		}
 		return -1;
 	}

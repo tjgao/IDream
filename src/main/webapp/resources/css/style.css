@@ -1,4 +1,4 @@
- .tabs { top:0 !important; }  
+.tabs { top:0 !important; }  
 
 
  a { text-decoration: none; }
@@ -32,6 +32,8 @@
     /* Opera 10.5, IE 9 */
     border-radius: 50%;  
     /*-moz-border-radius: 30px;  Disabled for FF1+ */
+	border: 1px #fff solid;
+	padding: 3px;
 }
 
 .avatar-frame-small {
@@ -69,9 +71,246 @@
 .col-fixed-40 {
 	width:40px !important;	
 }
+
+.bar-footer { 
+	background:url(../img/footer-bg.gif) no-repeat;
+	background-size: 100% 100%;
+	color: #fff !important;
+}
+
+.bar-footer a{
+	color: #fff !important;
+}
+
+.bar-footer .tabs {
+	background: none !important;
+	border: none !important;
+}
+
+.tabs-striped .tabs {
+	background: url(../img/footer-bg.gif) no-repeat;
+	background-size: 100% 100%;
+	color: #fff !important;
+}
+
+.tabs-striped .tabs a{
+	color: #fff !important;
+}
+	
+.tabs-top.tabs-striped .tab-item.activated, .tabs-top.tabs-striped .tab-item.active, .tabs-top.tabs-striped .tab-item.tab-item-active {
+	/*border-color: #005494;*/
+	border: none !important;
+	background: url(../img/arrow-up.png) no-repeat bottom center;
+}
+
+.scroll .card {
+	background: url(../img/mine-bg.gif) no-repeat;
+	background-size: 100% 100%;
+	color: #fff !important;
+}
+
+.scroll .card a{
+	color: #fff !important;
+}
+
+.card .item:last-child, .card .item:last-child .item-content, .list-inset .item:last-child, .list-inset .item:last-child .item-content, .padding > .list .item:last-child, .padding > .list .item:last-child .item-content {
+	border-radius: 0;
+}
+
+.card {
+	padding: 0 !important;
+	box-shadow: none !important;
+	margin:0 !important;
+	border-radius: 0 !important;
+}
+
+.item {
+	color: #fff !important;
+	background: none !important;
+	/*border: none;*/
+}
+
+.item a {
+	color: #fff !important;
+}
+
+.item p {
+	/*color: #fff !important;*/
+}
+
+
+
+.list .tabs .ng-binding {
+	font-size: 13px !important;
+}
+
+.tabs {
+	border: none;
+}
+
+.force-no-padding h2 {
+	color: #00b3bd;
+	font-weight: bold;
+}
+
+.force-no-padding-ppl h2 {
+	color: #ffffff;
+	font-weight: bold;
+}
+
+.card .item h2 {
+	color: #fff !important;
+}
+
+.button-outline.button-outline {
+	border: none !important;
+	background: #00b3bd !important;
+	color: #fff !important;
+}
+
+.card .item-body .tab-item {
+	font-size: 14px !important;
+}
+
+/*.pane .tabs-top {
+	background: url(../img/up-bg.gif);
+}*/
+
+.force-no-padding-left15 .button {
+	font-size: 14px !important;
+	line-height: 32px !important;
+	min-height: 32px !important;
+	border: none !important;
+}
+
+.force-no-padding-left15 .button .icon::before, .button.icon-left::before, .button.icon-right::before, .button.icon::before {
+	line-height: 32px !important;
+	font-size: 14px !important;
+}
+
+.bar-header .button-clear {
+	font-size: 24px !important;
+}
+
+
+.tab-item {
+	font-size: 18px !important;
+}
+
+.ng-enter {
+	background: url(../img/up-bg.gif);
+}
+
+.ng-enter .bar {
+	background: none !important;
+	border: none !important;
+	color: #fff;
+}
+
+.ng-enter h1 {
+	color: #fff !important;
+}
+
+
+.ng-enter .button-clear {
+	color: #fff !important;
+}
+
+.ng-enter input[type=text], .ng-enter textarea {
+	background: #fff;
+	color: #444;
+	padding: 0 5px;
+}
+
+.ng-enter textarea {
+	color: #444;
+	padding: 5px;
+}
+
+.ng-enter .item-input {
+	padding: 5px 15px !important;
+}
+
+.bar-footer .tab-item .icon {
+	display: inline-block;
+	font-size: 18px;
+}
+
+.bar-footer .tab-item {
+	font-size: 16px !important;
+}
+
+.tab-nav .tab-item .icon {
+	font-size: 19px !important;
+	display: inline-block;
+	margin-right: 5px;
+}
+
+.tabs-top .tab-title {
+	font-size: 20px;
+	letter-spacing:3px;
+}
+
+.tab-item .icon-s {
+  display: inline-block;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+.frame-person {
+	float: left;
+}
+
+
+.bar-header .title {
+	font-size: 20px;
+	letter-spacing:3px;
+	border-bottom: 1px rgba(255,255,255,0.4) solid;
+}
+
+.bar-header .title .icon{
+	font-size: 32px;
+}
+
+.number-line {
+	padding-left:60px;
+	padding-top:20px;
+	border: none !important;
+	background: url(../img/number-line.png) no-repeat left 10px top 20px !important;
+}
+
+.modal-wrapper .item {
+	border: none !important;
+}
+
+.upload-text {
+	color: #fff;
+	font-size: 16px;
+}
+
+.dream-select {
+	border: none;
+	color: #444444;
+}
+
+.dream-select > a:after {
+	border-color: #ff0000; 
+}
+
+.white-font {
+	color: #fff !important;
+}
+
+.white-font a{
+	color: #fff !important;
+}
+
+.bar-footer .icon {
+	color: #fff;
+}
 /*
-.image-cropper {
-  object-fit: contain; 
+.image-cropper {  object-fit: contain; 
+
   object-position: center; 
   height: 123px;
   width: 166px;

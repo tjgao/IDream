@@ -20,10 +20,10 @@ public interface ActivityMapper {
 	@Update("update activity set name=#{name}, description=#{description} where id=#{id}")
 	void updateActivity(Activity a);
 	
-	@Select("select * from activity order by id desc limit #{start}, #{limit}")
+	@Select("select * from activity order by orderby desc limit #{start}, #{limit}")
 	List<Activity> getActivitiesByPage(@Param("start") int start, @Param("limit") int limit);
 	
-	@Select("select * from activity order by id desc ")
+	@Select("select * from activity order by orderby desc ")
 	List<Activity> getActivities();
 	
 	@Select("select a.id as id, a.thumb as thumb from userimg as a, activity as b "
@@ -31,6 +31,6 @@ public interface ActivityMapper {
 	List<Thumb> getLatestThumbs(int id);
 	
 	@Select("select a.id as id, a.thumb as thumb from userimg as a, activity as b "
-			+ "where a.aId = b.id and b.id=#{id} order by a.likes, a.comments, a.shared desc")
+			+ "where a.aId = b.id and b.id=#{id} order by a.likes desc, a.comments desc, a.shared desc")
 	List<Thumb> getHottestThumbs(int id);
 }
