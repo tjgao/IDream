@@ -12,6 +12,7 @@ public class AppConfig extends HashMap<String, String> {
 	public static final String IMAGEPAGESIZE="ImagePageSize";
 	public static final String SERVERNAME="ServerName";
 	public static final String USERUPDATETIME="UserUpdateTime";
+	public static final String TEXTMSG = "replyText";
 
 	private static final AppConfig m = new AppConfig();
 	private AppConfig(){}

@@ -8,12 +8,12 @@
 		{
 			"name":"我要参加",
 			"type":"view",
-			"url":"http://m.idreamfactory.cn/auth"
+			"url":"http://m.idreamfactory.cn/auth?go=/upload"
 		},
 		{
 			"name":"我的梦",
 			"type":"view",
-			"url":"http://m.idreamfactory.cn/auth"
+			"url":"http://m.idreamfactory.cn/auth?go=mystatus"
 		}
 	]
 }

@@ -85,6 +85,18 @@ public class DockInController {
 		}
 	}
 	
+	//prepare text message
+	private String replyText(String me, String openid) throws Exception {
+		AppConfig cfg = AppConfig.getConfig();
+		WeChatXML m = new WeChatXML();
+		m.setRoot("xml");
+		m.addCDATA("FromUserName", me);
+		m.addCDATA("ToUserName", openid);
+		m.addText("CreateTime", Long.toString(System.currentTimeMillis()/1000));
+		m.addCDATA("MsgType", WeChatXML.TEXT_MSG);
+		m.addCDATA("Content", cfg.get(AppConfig.TEXTMSG));
+		return m.toXML();
+	}
 	
 	// Prepare news 
 	private String replySubscribe(String me, String openid) throws Exception {
@@ -104,6 +116,8 @@ public class DockInController {
 		m.addText("CreateTime", Long.toString(System.currentTimeMillis()/1000));
 		m.addCDATA("MsgType", WeChatXML.NEWS_MSG);
 		
+		
+		int cnt = m.getEleCount("Articles");
 		for( UserImg i : ul ) {
 			WeChatXML ai = new WeChatXML();
 			ai.setRoot("item");
@@ -114,7 +128,7 @@ public class DockInController {
 			m.addItem("Articles", ai);
 		}
 
-		m.addText("ArticleCount", Integer.toString(ul.size()+2));
+		m.addText("ArticleCount", Integer.toString(ul.size()+cnt));
 		return m.toXML();
 	}
 
@@ -167,6 +181,7 @@ public class DockInController {
 				}
 			}
 			else if(msgType.equals(WeChatXML.TEXT_MSG)) {
+				return replyText((String)m.get("ToUserName"), (String)m.get("FromUserName"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

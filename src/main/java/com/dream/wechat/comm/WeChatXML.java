@@ -109,6 +109,12 @@ public class WeChatXML extends HashMap<String, Object>{
 		 return toXML(sb);
 	}
 	
+	public int getEleCount(String name) {
+		Object[] arr = (Object[])super.get(name);
+		if( !SUBITEM.equals((String)arr[0])) return 0;
+		return ((Vector<WeChatXML>)arr[1]).size();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public String toXML(StringBuffer sb) {
 		sb.append("<"); sb.append(getRoot()); sb.append(">");

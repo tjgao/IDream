@@ -140,8 +140,18 @@ public class EntryController {
 
 	
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public ModelAndView main(HttpSession session ) {
+	public ModelAndView main(HttpSession session, @RequestParam(value="openid", required=false) String openid ) {
 		String go = (String)session.getAttribute("go");
+		if( openid != null && openid.length() > 0 ) {
+			//for test
+			User u = uService.getUserByOpenid(openid);
+			if( u != null ) {
+				logger.info("User id:{}, openid:{} is getting in system using hidden entry", u.getId(), u.getOpenId());
+				UserLite ul = new UserLite();
+				ul.setId(u.getId());
+				session.setAttribute("USER", ul);
+			}
+		}
 		//generate signature for jssdk
 		String nonce = AuthUtils.genRandomString(10);
 		String timestamp = Long.toString(System.currentTimeMillis()/1000);
@@ -165,9 +175,6 @@ public class EntryController {
 			session.removeAttribute("go");
 		}
 
-		UserLite ul = new UserLite();
-		ul.setId(2);
-		session.setAttribute("USER", ul);
 		return new ModelAndView("index", map);
 	}
 

@@ -103,6 +103,10 @@
 	background: url(../img/arrow-up.png) no-repeat bottom center;
 }
 
+.scroll {
+	height:60%;
+}
+
 .scroll .card {
 	background: url(../img/mine-bg.gif) no-repeat;
 	background-size: 100% 100%;
@@ -199,6 +203,7 @@
 
 .ng-enter {
 	background: url(../img/up-bg.gif);
+	background-size: 100% 100%;
 }
 
 .ng-enter .bar {
@@ -277,6 +282,7 @@
 	padding-top:20px;
 	border: none !important;
 	background: url(../img/number-line.png) no-repeat left 10px top 20px !important;
+	z-index: 999;
 }
 
 .modal-wrapper .item {
@@ -308,46 +314,45 @@
 .bar-footer .icon {
 	color: #fff;
 }
-/*
-.image-cropper {  object-fit: contain; 
 
-  object-position: center; 
-  height: 123px;
-  width: 166px;
-}
-
-.image-cropper {
-    width:100%;
-    height:auto;
-    display: inline-block;
-    background-position: center center;
-    background-size: cover;
+.newupload {
+	background: url(../img/up-bg.gif);
+	background-size: 100% 100%;
 }
 
 
-.bar-positive {
-    z-index: 2;
+.newupload .bar {
+	background: none;
 }
 
-.bar-subheader {
-    z-index: 1;
-    transition: top 0.25s ease;
+.newupload .button-clear, .newupload h1, .newupload .ng-pristine {
+	color: #fff;
 }
 
-.has-subheader {
-    top: 44px;
-    .scroll {
-        padding-top: 44px;
-    }
+.newupload input {
+	background: #fff;
+    color: #444;
+    padding: 0 5px;
 }
 
-body.bar-subheader-slide-away {
-    .bar-subheader {
-        top: 0;
-    }
-    .has-subheader {
-        top: 44px;
-    }
+.newupload textarea {
+    color: #444;
+    padding: 5px;
 }
 
-*/
+.newupload .padding {
+	padding:0;
+}
+
+.newupload .item {
+	border: none;
+	padding-right: 16px;
+}
+
+.bar .list .row .col, .bar .list .row .col60, .bar .list .comments {
+	color: #fff;
+}
+
+.ng-pristine {
+	color:#444 !important;
+}

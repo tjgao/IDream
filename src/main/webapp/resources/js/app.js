@@ -12,25 +12,24 @@ app.run(function($ionicPlatform) {
 })
 
 app.config(function($stateProvider, $urlRouterProvider){
-//	$stateProvider
-//    .state('upload', {
-//    	url:'/upload',
-//    	views:{
-//    		'mainView':{
-//    			templateUrl:'templates/upload.html',
-//    			controller:'upController'
-//    		}
-//    	}
-//    });
-//	
+	$stateProvider
+    .state('upload', {
+    	url:'/upload',
+    	views:{
+    		'mainView':{
+    			templateUrl:'templates/upload.html',
+    			controller:'upController'
+    		}
+    	}
+    });
+	
     $stateProvider
     .state('entry', {
         url:'/entry',
         abstract:true,
         views: {
             'mainView':{
-            	templateUrl:'templates/entry.html',
-                controller:'topController'
+            	templateUrl:'templates/entry.html'
             }
         }
     })

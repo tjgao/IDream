@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html ng-app="starter">
   <head>
+  	<title>青联梦工厂</title>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -70,7 +71,7 @@
 
     <script src="resources/js/wechat.js"></script>
   </head> 
-  <body >
+  <body ng-controller="topController" >
 
   <ion-nav-view name="mainView"></ion-nav-view>
 
@@ -168,11 +169,9 @@
               <a class="tab-item" href="#/entry/activities">
                  <i class="icon ion-ios-home-outline"></i>&nbsp;梦工厂 
               </a>
-<!--
 			  <a class="tab-item" href="#/upload">
 				 <i class="icon ion-ios-plus-outline"></i>&nbsp;我要参加
 			  </a>
--->
               <a class="tab-item" href="#/people/${sessionScope.USER.id}/activities" >
                   <i class="icon ion-ios-person-outline"></i>&nbsp;我的梦             
               </a>
@@ -241,7 +240,7 @@
                             </div>
                             </div>
                         </div>
-                        <div class="item" ng-repeat-end>
+                        <div class="item comments" ng-repeat-end>
                             <p>{{c.content}}</p>
                         </div>
                     </div>
@@ -284,7 +283,7 @@
                         <input ng-model="imgInfo.uploadImgName" type="text" placeholder="梦想标题"/>
                     </label>
                     <label class="item item-input">
-                        <textarea ng-model="imgInfo.uploadImgDesc"  placeholder="梦想描述"/>
+                        <textarea ng-model="imgInfo.uploadImgDesc"  placeholder="梦想描述"></textarea>
                     </label>
                     
                     <a class="item item-icon-left" ng-click="uploadImg()">
@@ -299,11 +298,9 @@
               <a class="tab-item" href="#/entry/activities">
                  <i class="icon ion-ios-home-outline"></i>&nbsp;梦工厂 
               </a>
-<!--
 			  <a class="tab-item" href="#/upload">
 				 <i class="icon ion-ios-plus-outline"></i>&nbsp;我要参加
 			  </a>
--->
               <a class="tab-item" href="#/people/{{t_uId}}/activities" >
                   <i class="icon ion-ios-person-outline"></i>&nbsp;我的梦             
               </a>
@@ -337,11 +334,10 @@
               <a class="tab-item" href="#/entry/activities">
                   <i class="icon ion-ios-home-outline"></i> 梦工厂 
               </a>
-<!--
+
 			  <a class="tab-item" href="#/upload">
 				 <i class="icon ion-ios-plus-outline"></i>&nbsp;我要参加
 			  </a>
--->
               <a class="tab-item" href="#/people/{{me}}/activities" >
                   <i class="icon ion-ios-person-outline"></i> 我的梦             
               </a>
@@ -439,7 +435,7 @@
                                 </div>
                             </div>
 							<div class="force-no-padding-left15" style="text-align: right" ng-if="me == p_uId">
-								<button ng-show="me != '' && me==p_uId" class="button button-striped" ng-click="follow({{user.id}})"><i class="icon ion-minus-circled"></i>&nbsp;关注</button>
+								<button ng-show="me != '' && me==p_uId" class="button button-striped" ng-click="follow({{user.id}})"><i class="icon ion-plus"></i>&nbsp;关注</button>
 							</div>
                         </div>
 					</div>
@@ -485,52 +481,39 @@
           </div>	
 	</script>
 	
-	<script id="templates/uploadBg.html" type="text/ng-template">
-	</script>
 	
 	<script id="templates/upload.html" type="text/ng-template">
+		<div class="newupload">
             <header class="bar bar-header">
-                <div class="button button-clear" ng-click="exitUpload()">
-                <span class="icon ion-close"></span></div>
+                <div class="button button-clear" ng-click="goBack()">
+                <span class="icon ion-arrow-left-c"></span></div>
                 <h1 class="title"><i class="icon ion-ios-camera-outline"></i>&nbsp;上传图片</h1>
             </header>
             <ion-content class="has-small-tabs-top number-line" has-header="true" padding="true">
                 <div class="list">
                    <p class="upload-text">选择活动</p>
-<!--
-					<select class="dream-select">
-   						<option value="青春·毕业梦">青春·毕业梦</option>
-  						 <option value="青春·恋爱梦">青春·恋爱梦</option>
-						 <option value="青春·旅行梦">青春·旅行梦</option>
-						 <option value="青春·创业梦">青春·创业梦</option>
-						 <option value="青春·冒险梦">青春·冒险梦</option>
-						 <option value="青春·美食梦">青春·美食梦</option>
-					</select> 
--->
-					<p>&nbsp;</p>
+					<select class="dream-select" ng-model="selectedItem" ng-options="a.name for a in activities">
+					</select>
 					<p>&nbsp;</p>
 					<a class="item item-icon-left" ng-click="chooseImg()">
                         <i class="icon ion-image"></i>
                         选取梦想画面
                     </a>
-					<!--<div class="item item-thumbnail-left">-->
-					      <!--<img ng-src="{{imgInfo.currentSel}}">-->
-					<!--</div>-->
 					<p>&nbsp;</p>
 					<p class="upload-text">我的梦想是</p>
                     <label class="item item-input">
                         <input ng-model="imgInfo.uploadImgName" type="text" placeholder="梦想标题"/>
                     </label>
                     <label class="item item-input">
-                        <textarea ng-model="imgInfo.uploadImgDesc"  placeholder="梦想描述"/>
+                        <textarea ng-model="imgInfo.uploadImgDesc"  placeholder="梦想描述"></textarea>
                     </label>
-                    
-                    <a class="item item-icon-left" ng-click="uploadImg()">
+                    <a class="item item-icon-left" ng-click="uploadImg()" >
                         <i class="icon ion-upload"></i>
                         上传梦想
                     </a>
                 </div>
             </ion-content>
+		</div>
 	</script>
   </body>
 </html>

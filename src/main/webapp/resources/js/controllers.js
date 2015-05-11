@@ -1,6 +1,6 @@
 var dreamControllers = angular.module('dreamControllers',['dreamServices']);
 
-dreamControllers.controller('topController', function($location,$scope, $state, $stateParams, $state, userService) {
+dreamControllers.controller('topController', function($location,$scope, $state, $stateParams, $state, userService, ActivityResource) {
     $scope.t_uId  = userService.getUser();
     if( init_url != '') {
     	if( init_url == 'mystatus') {
@@ -8,6 +8,11 @@ dreamControllers.controller('topController', function($location,$scope, $state, 
     	} else {
     		$location.path(init_url);
     	}
+    }
+    $scope.activities = ActivityResource.query();
+    
+    $scope.loadActivities = function() {
+    	$scope.activities = ActivityResource.query();
     }
 });
 
@@ -65,40 +70,103 @@ dreamControllers.controller('peopleController', function($http, $scope, $ionicPo
     $scope.fan = UserFanResource.query({id:$scope.p_uId});
 });
 
-dreamControllers.controller('upController', function($scope, $ionicModal){
-	$scope.$watch("assignments", function(value){
-		$scope.uploadDlg();
-	});
-    $ionicModal.fromTemplateUrl('uploadImg.html', function($ionicModal) {
-        $scope.modal = $ionicModal;
-    }, {
-        scope: $scope,
-        animation: 'slide-in-up'
-    });
-
-    $scope.uploadDlg = function() {
-        $scope.modal.show();
+dreamControllers.controller('upController', function($scope, $ionicModal, $ionicHistory, $location){
+	$scope.$parent.$watch("activities", function(val, old){
+		if( val == null || val === old ) return;
+		$scope.activities = $scope.$parent.activities;
+	}, true)
+    $scope.imgInfo = {
+		uploadImgName:'',
+		uploadImgDesc:'',
+		currentSel:''
+	};
+	
+	if( $scope.activities != null && $scope.activities.length > 0)
+		$scope.selectedItem = $scope.activities[0];
+	
+    $scope.chooseImg = function() {
+    	we_chooseImage($scope.imgInfo);
     };	
-    $scope.exitUpload = function() {
-        $scope.modal.hide();
+    
+    $scope.clean = function() {
+    	$scope.imgInfo.uploadImgName = '';
+    	$scope.imgInfo.uploadImgDesc = '';
     };
     
+    $scope.uploadCallback = function(serverId) {
+    	var json = {
+    			uploadImgName:$scope.imgInfo.uploadImgName,
+    			uploadImgDesc:$scope.imgInfo.uploadImgDesc,
+    			aId:selectedItem.id
+    	}
+    	$http.post('api/image/upload/' + serverId[0], json).success(function(data){
+    		$scope.clean();
+    		alert(JSON.stringify(data));
+    		if( data.retcode == 0 ) {
+    			$scope.clean();
+    			alert('图片上传成功！');
+    			//$scope.$broadcast('curActivityChanged', $scope.activity.id);
+    			$scope.$parent.loadActivities();
+    		}
+    		else {
+    			alert('图片上传失败！');
+    		}
+    	}).error(function(err){
+    		alert('请确保网络连接正常！');
+    	});  	
+    }
+
+    $scope.uploadImg = function() {
+    	if(  $scope.imgInfo.uploadImgName == '') {
+    		alert('图片名字为空！');
+    		return;
+    	}
+
+    	if(  $scope.imgInfo.uploadImgDesc == ''){
+    		alert('图片描述为空！');
+    		return;
+    	}
+
+    	if($scope.imgInfo.currentSel == '' ) {
+    		alert('请先选择要上传的图片！');
+    		return;
+    	}
+    	
+    	if($scope.selectedItem == null ) {
+    		alert('请先选择要参加的活动！');
+    		return;
+    	}
+    	we_uploadImage($scope.uploadCallback);
+    }      
+    
+    $scope.goBack = function() {
+    	var backView = $ionicHistory.backView();
+        if( backView != null ) backView.go();
+        else
+        	$location.path("/entry/activities");
+    };
 });
 
 dreamControllers.controller('activityController', function($scope, $state, $stateParams, $ionicHistory, 
-		$ionicActionSheet, ActivityResource, $ionicModal, ActivityLatestRes, ActivityHottestRes) {
+		$ionicActionSheet,  $ionicModal, ActivityLatestRes, ActivityHottestRes) {
     $scope.aId = $stateParams.aId;
-    $scope.activities = ActivityResource.query();
-    $scope.activity = ActivityResource.get({id:$scope.aId});
-    $scope.shareData = {
-			title:$scope.activity.name,
-			desc:$scope.activity.description,
-			link:'http://m.idreamfactory.cn/auth?go=/activity/',
-			imgUrl:'http://m.idreamfactory.cn/',
-			aId:$scope.activity.id,
-			logo:$scope.activity.logo
-    };
+    $scope.activities = $scope.$parent.activities; //ActivityResource.query();
 
+    $scope.$parent.$watch("activities", function(val, old){
+    	if(val == null || val === old ) return;
+    	$scope.activities = $scope.$parent.activities;
+    }, true);
+    
+    $scope.activity = null;
+    if( $scope.activities != null ) {
+    	for( var i = 0; i<$scope.activities.length; i++) {
+    		if( $scope.activities[i].id == $scope.aId ) {
+    			$scope.activity = $scope.activities[i];
+    			break;
+    		}
+    	}
+    }
+    
 	$scope.curTab = 'latest';
 	$scope.latest_thumbs = ActivityLatestRes.query({id:$scope.aId});
 	$scope.hottest_thumbs = ActivityHottestRes.query({id:$scope.aId});
@@ -124,10 +192,7 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
 				$scope.thumbs = $scope.hottest_thumbs;
 			} else 
 				$scope.thumbs = {};
-			
-			$scope.shareData.title = $scope.activity.name;
-			$scope.shareData.desc = $scope.activity.description;
-			$scope.shareData.logo = $scope.activity.logo;
+
 		}
 	}, true);    
 
@@ -218,7 +283,8 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
     $scope.exitUpload = function() {
         $scope.clean();
         $scope.modal.hide();
-        $scope.activities = ActivityResource.query(); 
+        $scope.$parent.loadActivities();
+        //$scope.activities = ActivityResource.query(); 
     };
     $scope.clean = function() {
         we_cleanImage();
@@ -242,7 +308,7 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
     		alert(JSON.stringify(data));
     		if( data.retcode == 0 ) {
     			alert('图片上传成功！');
-    			$scope.$broadcast('curActivityChanged', $scope.activity.id);
+    			//$scope.$broadcast('curActivityChanged', $scope.activity.id);
     			exitUpload();
     		}
     		else {
@@ -340,8 +406,13 @@ dreamControllers.controller('imgController',function($http, $scope, $stateParams
     };
 });
 
-dreamControllers.controller('tabActivitiesController', function($location, $scope, $http, $ionicModal, $ionicHistory, $state, ActivityResource) {
-    $scope.activities = ActivityResource.query(); 
+dreamControllers.controller('tabActivitiesController', function($location, $scope, $http, $ionicModal, $ionicHistory, $state) {
+	$scope.activities = null;
+    $scope.$parent.$watch("activities", function(val, old){
+    	if( val == null || val === old) return;
+    	$scope.activities = val;
+    }, true);
+
     $scope.imgInfo = {
     		uploadImgName:'',
     		uploadImgDesc:'',
@@ -390,7 +461,8 @@ dreamControllers.controller('tabActivitiesController', function($location, $scop
     		if( data.retcode == 0 ) {
     			$scope.clean();
     			alert('图片上传成功！');
-    			$scope.activities = ActivityResource.query(); 
+    			//$scope.activities = ActivityResource.query(); 
+    			$scope.$parent.loadActivities();
     			$scope.exitUpload();
     		}
     		else {

@@ -20,6 +20,7 @@ public class AppConfigListener implements ServletContextListener {
 		ServletContext sc = arg0.getServletContext();
 		AppConfig cfg = AppConfig.getConfig();
 	    cfg.put(AppConfig.SERVERNAME, sc.getInitParameter(AppConfig.SERVERNAME));	
+	    cfg.put(AppConfig.TEXTMSG, sc.getInitParameter(AppConfig.TEXTMSG));
 		String s = null;
 		try{
 			s = sc.getInitParameter(AppConfig.ACTIVITYPAGESIZE);
