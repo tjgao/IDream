@@ -29,9 +29,6 @@ var we_cleanImage = function() {
 };
 
 var we_uploadImage = function( uploadCallback) {
-	if( g_images.localId.length == 0 ) {
-		return;
-	}
 	var i = 0; 
 	var len = g_images.localId.length;
 	function upload() {
@@ -51,3 +48,10 @@ var we_uploadImage = function( uploadCallback) {
 	upload();
 	return g_images.serverId;
 };
+
+
+
+
+
+
+

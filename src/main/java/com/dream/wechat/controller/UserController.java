@@ -54,7 +54,8 @@ public class UserController {
 	
 	@RequestMapping(value="/api/user/{id}/following/image", method=RequestMethod.GET) 
 	public @ResponseBody List<UserImg> getUserFollowingImg(@PathVariable("id") int id) {
-		return uService.getUserFollowingImg(id);
+		List<UserImg> l = uService.getUserFollowingImg(id);
+		return l;
 	}
 	
 	@RequestMapping(value="/api/user/{id}/fan", method=RequestMethod.GET) 

@@ -33,7 +33,6 @@
     border-radius: 50%;  
     /*-moz-border-radius: 30px;  Disabled for FF1+ */
 	border: 1px #fff solid;
-	padding: 3px;
 }
 
 .avatar-frame-small {
@@ -92,6 +91,13 @@
 	background-size: 100% 100%;
 	color: #fff !important;
 }
+
+.toptabs {
+	background: url(../img/footer-bg.gif) no-repeat !important;
+	background-size: 100% 100%;
+	color: #fff !important;
+}
+
 
 .tabs-striped .tabs a{
 	color: #fff !important;
@@ -278,12 +284,18 @@
 }
 
 .number-line {
-	padding-left:60px;
+	padding-left:0px;
 	padding-top:20px;
 	border: none !important;
-	background: url(../img/number-line.png) no-repeat left 10px top 20px !important;
+	
 	z-index: 999;
 }
+
+.number-line .list {
+	padding-left: 60px;
+	background: url(../img/number-line.png) no-repeat left 10px top 5px !important;
+}
+
 
 .modal-wrapper .item {
 	border: none !important;
@@ -297,6 +309,7 @@
 .dream-select {
 	border: none;
 	color: #444444;
+	border: 1px solid #00b3bd;
 }
 
 .dream-select > a:after {
@@ -331,8 +344,9 @@
 
 .newupload input {
 	background: #fff;
-    color: #444;
+    color: #00b3bd;
     padding: 0 5px;
+	border: 1px solid #00b3bd;
 }
 
 .newupload textarea {
@@ -355,4 +369,58 @@
 
 .ng-pristine {
 	color:#444 !important;
+}
+
+.scroll .item button {
+	background: #00b3bd !important;
+	border: none !important;
+	color: #fff !important;
+	border-radius: 0 !important;
+}
+
+.list .item textarea {
+	border: 1px solid #00b3bd;
+}
+
+.scroll .item .button-small {
+	padding: 2px 6px 1px !important;
+}
+
+.toptabs .tabitem {
+	float: left;
+	display: inline-block;
+	width: 50%;
+	word-spacing: 5px;
+	font-size: 20px;
+	text-align: center;
+	color: #fff;
+}
+
+.toptabs .tabitem a{
+	color: #fff;
+}
+
+.toptabs .icon { 
+	display: inline-block;
+	font-size: 20px;
+}
+
+#tipcover {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.7);
+	display: none;
+	z-index: 20000;
+}
+
+#tipcover img {
+    position: fixed;
+    right: 18px;
+    top: 5px;
+    width: 260px;
+    height: 380px;
+    z-index: 999;
 }

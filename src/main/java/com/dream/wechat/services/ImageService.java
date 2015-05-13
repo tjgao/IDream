@@ -34,6 +34,10 @@ public class ImageService {
 		uiMapper.plusLikes(imgId);
 	}
 	
+	public void share(int id) {
+		uiMapper.putShare(id);
+	}
+	
 	public List<UserImg> getHottestTopN(int n) {
 		return uiMapper.getHottestTopN(n);
 	}

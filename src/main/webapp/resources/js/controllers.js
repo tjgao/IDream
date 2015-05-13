@@ -1,14 +1,25 @@
 var dreamControllers = angular.module('dreamControllers',['dreamServices']);
 
-dreamControllers.controller('topController', function($location,$scope, $state, $stateParams, $state, userService, ActivityResource) {
+dreamControllers.controller('topController', function($rootScope, $location,$scope,  userService, ActivityResource) {
     $scope.t_uId  = userService.getUser();
-    if( init_url != '') {
-    	if( init_url == 'mystatus') {
-    		$location.path('/people/' + $scope.t_uId + '/activities');
-    	} else {
-    		$location.path(init_url);
-    	}
-    }
+     $scope.$watch("assignments", function (value) {
+    	    if( init_url != '') {
+    	    	if( init_url == 'mystatus') {
+    	    		$location.path('/people/' + $scope.t_uId + '/activities');
+    	    	} else {
+    	    		$location.path(init_url);
+    	    	}
+    	    	init_url = '';
+    	    }    	  
+    });
+//     alert($location.absUrl());
+     $scope.showTip = function(show) { 
+     	if(show)
+     		angular.element(document.querySelector( '#tipcover' )).css('display','block');
+     	else
+     		angular.element(document.querySelector( '#tipcover' )).css('display','');
+     };
+
     $scope.activities = ActivityResource.query();
     
     $scope.loadActivities = function() {
@@ -70,20 +81,25 @@ dreamControllers.controller('peopleController', function($http, $scope, $ionicPo
     $scope.fan = UserFanResource.query({id:$scope.p_uId});
 });
 
-dreamControllers.controller('upController', function($scope, $ionicModal, $ionicHistory, $location){
+dreamControllers.controller('upController', function($http, $scope, $ionicModal, $ionicHistory, $location){
 	$scope.$parent.$watch("activities", function(val, old){
 		if( val == null || val === old ) return;
 		$scope.activities = $scope.$parent.activities;
-	}, true)
+		if( $scope.activities.length > 0)
+			$scope.selectedItem.id = $scope.activities[0].id;
+	}, true);
+	
     $scope.imgInfo = {
 		uploadImgName:'',
 		uploadImgDesc:'',
 		currentSel:''
 	};
 	
-	if( $scope.activities != null && $scope.activities.length > 0)
-		$scope.selectedItem = $scope.activities[0];
-	
+    $scope.selectedItem = {};
+
+	if( $scope.activities.length > 0)
+		$scope.selectedItem.id = $scope.activities[0].id;	
+
     $scope.chooseImg = function() {
     	we_chooseImage($scope.imgInfo);
     };	
@@ -91,17 +107,18 @@ dreamControllers.controller('upController', function($scope, $ionicModal, $ionic
     $scope.clean = function() {
     	$scope.imgInfo.uploadImgName = '';
     	$scope.imgInfo.uploadImgDesc = '';
+    	$scope.imgInfo.currentSel = '';
+    	$scope.selectedItem.id = '';
     };
     
     $scope.uploadCallback = function(serverId) {
     	var json = {
     			uploadImgName:$scope.imgInfo.uploadImgName,
     			uploadImgDesc:$scope.imgInfo.uploadImgDesc,
-    			aId:selectedItem.id
+    			aId:$scope.selectedItem.id
     	}
     	$http.post('api/image/upload/' + serverId[0], json).success(function(data){
     		$scope.clean();
-    		alert(JSON.stringify(data));
     		if( data.retcode == 0 ) {
     			$scope.clean();
     			alert('图片上传成功！');
@@ -114,7 +131,7 @@ dreamControllers.controller('upController', function($scope, $ionicModal, $ionic
     	}).error(function(err){
     		alert('请确保网络连接正常！');
     	});  	
-    }
+    };
 
     $scope.uploadImg = function() {
     	if(  $scope.imgInfo.uploadImgName == '') {
@@ -132,7 +149,7 @@ dreamControllers.controller('upController', function($scope, $ionicModal, $ionic
     		return;
     	}
     	
-    	if($scope.selectedItem == null ) {
+    	if($scope.selectedItem.id == '' ) {
     		alert('请先选择要参加的活动！');
     		return;
     	}
@@ -147,24 +164,33 @@ dreamControllers.controller('upController', function($scope, $ionicModal, $ionic
     };
 });
 
-dreamControllers.controller('activityController', function($scope, $state, $stateParams, $ionicHistory, 
-		$ionicActionSheet,  $ionicModal, ActivityLatestRes, ActivityHottestRes) {
+dreamControllers.controller('activityController', function($http, $scope, $state, $stateParams, $ionicHistory, 
+		$ionicActionSheet, $location, $ionicModal,ActivityResource, ActivityLatestRes, ActivityHottestRes) {
     $scope.aId = $stateParams.aId;
-    $scope.activities = $scope.$parent.activities; //ActivityResource.query();
 
+    $scope.activities = $scope.$parent.activities; //ActivityResource.query();
     $scope.$parent.$watch("activities", function(val, old){
     	if(val == null || val === old ) return;
     	$scope.activities = $scope.$parent.activities;
     }, true);
-    
+
     $scope.activity = null;
-    if( $scope.activities != null ) {
+
+    $scope.getActivity = function(id) {
     	for( var i = 0; i<$scope.activities.length; i++) {
-    		if( $scope.activities[i].id == $scope.aId ) {
-    			$scope.activity = $scope.activities[i];
-    			break;
+    		if( $scope.activities[i].id == id ) {
+    			return $scope.activities[i];
     		}
-    	}
+    	}    	
+    }
+
+    if( $scope.activities == null || $scope.activities.length == 0) {
+    	$http.get('api/activity').success(function(data){
+    		$scope.activities = data;
+    		$scope.activity = $scope.getActivity($scope.aId);
+    	});
+    } else {
+    	$scope.activity = $scope.getActivity($scope.aId);
     }
     
 	$scope.curTab = 'latest';
@@ -183,6 +209,7 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
 
 	$scope.$watch('activity', function(){
 		if($scope.activity != null) {
+			$scope.prepareShare();
 			$scope.latest_thumbs = ActivityLatestRes.query({id:$scope.activity.id});
 			$scope.hottest_thumbs = ActivityHottestRes.query({id:$scope.activity.id});
 			if( $scope.curTab == 'latest') {
@@ -192,7 +219,6 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
 				$scope.thumbs = $scope.hottest_thumbs;
 			} else 
 				$scope.thumbs = {};
-
 		}
 	}, true);    
 
@@ -223,49 +249,33 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
     		}
     	}    	
     };
-    
-//    $scope.shareSuccess = function() {
-//    	alert('分享成功');
-//    };
-//
-//    $scope.shareFail = function (res) {
-//        alert(JSON.stringify(res));
-//    };
-//    
-//    $scope.showActionSheet = function() {
-//        $ionicActionSheet.show({
-//            buttons:[{text:'分享到朋友圈'}, {text:'分享给朋友'}, {text: '分享到QQ'}, {text:'分享到微博'}],
-//            cancelText:'取消',
-//            buttonClicked:function(idx) {
-//            	var data = {
-//            			title:$scope.shareData.title,
-//            			desc:$scope.shareData.desc,
-//            			link:$scope.shareData.link+$scope.shareData.id,
-//            			imgUrl:$scope.shareData.imgUrl+$scope.shareData.logo
-//            	};
-//            	if( idx == 0 ) {
-//            		shareService.shareTimeline(data, $scope.shareSuccess, $scope.shareFail);
-//            	}
-//            	else if( idx == 1) {
-//            		shareService.shareApp(data, $scope.shareSuccess, $scope.shareFail);
-//            	}
-//            	else if( idx == 2 ) {
-//            		shareService.shareQQ(data, $scope.shareSuccess, $scope.shareFail);
-//            	}
-//            	else {
-//            		shareService.shareWeibo(data, $scope.shareSuccess, $scope.shareFail);
-//            	}
-//            	return true;
-//            }
-//        });
-//    };    
-    
+
+    $scope.prepareShare = function() {
+		var share = {
+				title : "我参与了青联梦工厂的「" + $scope.activity.name + "」活动，小伙伴们速来。",
+				desc : "活动介绍：" + $scope.activity.description,
+				url : "http://m.idreamfactory.cn/auth?go=/activity/" + $scope.activity.id,
+				imgUrl : "http://m.idreamfactory.cn/" + $scope.activity.logo
+		};
+	  	setShare(share);    	
+    };
+
+    $scope.$watch(function(){
+    	return $location.path();
+    }, function(val){
+    	if( val.substring(0, 10) == '/activity/') {
+    		$scope.prepareShare();
+    	} else {
+    		recoverDefaultShare();
+    	}    		
+    }, true);
+
     //bad , should be wrapped up
     $scope.imgInfo = {
     		uploadImgName:'',
     		uploadImgDesc:'',
     		currentSel:''
-    };
+    }
 
     $ionicModal.fromTemplateUrl('uploadImg.html', function($ionicModal) {
         $scope.modal = $ionicModal;
@@ -285,6 +295,15 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
         $scope.modal.hide();
         $scope.$parent.loadActivities();
         //$scope.activities = ActivityResource.query(); 
+		$scope.latest_thumbs = ActivityLatestRes.query({id:$scope.activity.id});
+		$scope.hottest_thumbs = ActivityHottestRes.query({id:$scope.activity.id});    
+		if( $scope.curTab == 'latest') {
+			$scope.thumbs = $scope.latest_thumbs;
+		}
+		else if( $scope.curTab == 'hottest') {
+			$scope.thumbs = $scope.hottest_thumbs;
+		} else 
+			$scope.thumbs = {};		
     };
     $scope.clean = function() {
         we_cleanImage();
@@ -305,7 +324,6 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
     	}
     	$http.post('api/image/upload/' + serverId[0], json).success(function(data){
     		$scope.clean();
-    		alert(JSON.stringify(data));
     		if( data.retcode == 0 ) {
     			alert('图片上传成功！');
     			//$scope.$broadcast('curActivityChanged', $scope.activity.id);
@@ -341,13 +359,46 @@ dreamControllers.controller('activityController', function($scope, $state, $stat
 
 
 
-dreamControllers.controller('imgController',function($http, $scope, $stateParams, $ionicModal, $ionicActionSheet, 
-		$ionicHistory, $ionicPopup, $state, ImageResource, userService, CommentResource){
+dreamControllers.controller('imgController',function($http, $scope, $stateParams, $ionicModal, $ionicPopover, 
+		$ionicHistory, $ionicPopup, $state, ImageResource, userService, CommentResource, $location){
     $scope.imgId = $stateParams.imgId; 
-    $scope.image = ImageResource.get({id:$scope.imgId});
+//    $scope.image = ImageResource.get({id:$scope.imgId});
     $scope.comments = CommentResource.query({id:$scope.imgId});
     $scope.comment = {};
 
+    $scope.doneShare = function(res) {
+    	$http.post('api/image/' + $scope.imgId + '/share').success(function(data){
+    		if( data.retcode == 0 ) {
+    			$http.get('api/image/' + $scope.imgId).success(function(img){
+    				$scope.image = img;
+    			});
+    		}
+    	});
+    }
+    
+    $scope.prepareShare = function() {
+		var share = {
+				title : "好图一张，来自青联梦工厂的「" + $scope.image.name + "」。",
+				desc : "图片介绍：" + $scope.image.description,
+				url : "http://m.idreamfactory.cn/auth?go=/image/" + $scope.image.id,
+				imgUrl : "http://m.idreamfactory.cn/" + $scope.image.thumb,
+				success: $scope.doneShare
+		};
+	  	setShare(share)    	
+    }
+    
+    $scope.$watch(function(){
+    	return $location.path();
+    }, function(val, old){
+    	if( val.substring(0, 7) == '/image/') {
+    		$http.get('api/image/' + $scope.imgId).success(function(data){
+    			$scope.image = data;
+    			$scope.prepareShare();
+    		});
+    	} else {
+    		recoverDefaultShare();
+    	}
+    }, true);
 
     $scope.checkLogin = function() {
     	var uId = userService.getUser();
@@ -367,6 +418,19 @@ dreamControllers.controller('imgController',function($http, $scope, $stateParams
     		alert('无法操作，请检查网络。')
     	});
     }
+    
+    $scope.showTip = function(show) { 
+     	if(show)
+     		angular.element(document.querySelector( '#tipcover' )).css('display','block');
+     	else
+     		angular.element(document.querySelector( '#tipcover' )).css('display','');
+    };
+     
+    $ionicPopover.fromTemplateUrl('templates/popover.html',{
+    	scope:$scope
+    }).then(function(popover){
+    	$scope.popover = popover;
+    }); 
     
     $scope.submitComment = function() {
     	if( !$scope.checkLogin() ) return;
@@ -395,15 +459,15 @@ dreamControllers.controller('imgController',function($http, $scope, $stateParams
         if( backView != null ) backView.go();
         else $state.go('entry-activities');
     };
-
-    $scope.showActionSheet = function() {
-        $ionicActionSheet.show({
-            buttons:[{text:'分享到朋友圈'}, {text:'分享给朋友'}, {text: '分享到QQ'}, {text:'分享到微博'}],
-            cancelText:'取消',
-            buttonClicked:function(idx) {
-            }
-        });
-    };
+//
+//    $scope.showActionSheet = function() {
+//        $ionicActionSheet.show({
+//            buttons:[{text:'分享到朋友圈'}, {text:'分享给朋友'}, {text: '分享到QQ'}, {text:'分享到微博'}],
+//            cancelText:'取消',
+//            buttonClicked:function(idx) {
+//            }
+//        });
+//    };
 });
 
 dreamControllers.controller('tabActivitiesController', function($location, $scope, $http, $ionicModal, $ionicHistory, $state) {

@@ -89,6 +89,20 @@ public class ImagesController {
 		return h;
 	}
 	
+	@RequestMapping(value="/api/image/{id}/share", method=RequestMethod.POST)
+	public @ResponseBody HashMap<String, Object> share(@PathVariable("id") int id) {
+		HashMap<String, Object> h = new HashMap<String, Object>();
+		try{
+			iService.share(id);
+			h.put("retcode", 0);
+			h.put("msg", "SUCCESS");
+		} catch (Exception e) {
+			h.put("msg", "FAILURE");
+			h.put("retcode", -1);
+		}
+		return h;
+	}
+	
 	@RequestMapping(value="/api/image/upload/{id}", method=RequestMethod.POST)
 	public @ResponseBody HashMap<String,Object> upload(HttpSession session, @PathVariable("id") String id, @RequestBody ImgUpload iu) {
 		HashMap<String, Object> h = new HashMap<String, Object>();
@@ -102,6 +116,7 @@ public class ImagesController {
 		String thumb = "t_" + fileName;
 		String path = servletCtx.getRealPath("/") + AppConfig.UPLOADDIR + File.separator ;
 		String thumbpath = servletCtx.getRealPath("/") + AppConfig.THUMBDIR + File.separator ; 
+		logger.debug("Image: {} needs to be done from wechat server", id);
 		if( AuthUtils.downloadImage(id, path + fileName) ) {
 			AppConfig cfg = AppConfig.getConfig();
 			int size = Integer.parseInt(cfg.get(AppConfig.THUMBNAIL));

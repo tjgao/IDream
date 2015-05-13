@@ -190,8 +190,11 @@ public class AuthUtils {
 		return u;
 	}
 
-	public static String getAccessToken() throws Exception {
-		if( (System.currentTimeMillis() / 1000 - accessTokenTimeStamp > accessTokenExpiresIn ) || accessToken == null ) {
+	public static String getAccessToken(boolean bForce) throws Exception {
+		if( bForce ) accessToken = null;
+		long seconds = System.currentTimeMillis() / 1000 - accessTokenTimeStamp;
+		logger.debug("ACCESS TOKEN lifetime check: {} seconds", seconds);
+		if( (seconds > accessTokenExpiresIn ) || accessToken == null ) {
 			logger.debug("ACCESS TOKEN expired, trying to grab a new one.");
 			String u = String.format("%s?grant_type=client_credential&appid=%s&secret=%s", accessTokenURL, 
 					URLEncoder.encode(appId,"utf-8"), URLEncoder.encode(appSecret,"utf-8"));
@@ -208,6 +211,7 @@ public class AuthUtils {
 			accessTokenExpiresIn = ( l > 50 )?(l-50):l;
 			accessToken = obj.get("access_token");
 			accessTokenTimeStamp = System.currentTimeMillis()/1000;
+			logger.debug("ACCESS TOKEN renewed, exprires in {}", accessTokenExpiresIn);
 		}
 		return accessToken;
 	}
@@ -215,7 +219,7 @@ public class AuthUtils {
 	public static String getJsTicket() throws Exception {
 		if( (System.currentTimeMillis() / 1000 - jsTicketTimeStamp > jsTicketExpiresIn) || jsTicket == null ) {
 			logger.debug("JS TICKET expired, grab a new one.");
-			String u = String.format("%s?access_token=%s&type=jsapi", jsTicketUrl, getAccessToken());
+			String u = String.format("%s?access_token=%s&type=jsapi", jsTicketUrl, getAccessToken(false));
 			String resp = HttpsRequest(u);
 			ObjectMapper mapper = new ObjectMapper();
 			HashMap<String, String> obj = mapper.readValue(resp.getBytes("utf-8"), new TypeReference<HashMap<String,String>>(){});
@@ -233,7 +237,7 @@ public class AuthUtils {
 		FileOutputStream fs = null;
 		InputStream in = null;
 		try {
-			String token = getAccessToken();
+			String token = getAccessToken(false);
 			String ref = String.format("%s?access_token=%s&media_id=%s", mediaUrl, token, id);
 			HttpURLConnection conn = null;
 			URL url = new URL(ref);

@@ -35,6 +35,9 @@ public interface UserImgMapper {
 	@Insert("insert into imglike (imgid, userid, createtime) values (#{imgId}, #{userId}, now())")
 	void putLikes(@Param("imgId") int imgId, @Param("userId") int uId);
 	
+	@Insert("update userimg set shared=shared+1 where id=#{id}")
+	void putShare(@Param("id") int id);
+	
 	@Insert("insert into imgComment (imgid, userid, createtime, content) values "
 			+ "(#{imgId}, #{userId}, now(), #{content})")
 	int putComment(ImgComment com);
@@ -57,6 +60,10 @@ public interface UserImgMapper {
 	
 	@Select("select id, file, thumb from userimg where aid=#{id} order by id desc limit #{start}, #{limit}")
 	List<Thumb> getThumbsByActivityIdPage(@Param("id") int id, @Param("start") int start, @Param("limit") int limit);
+	
+	@Select("select id, file, thumb from userimg where aid=#{aid} and authorid=#{uid} "
+			+ " order by id desc limit #{start}, #{limit}")
+	List<Thumb> getThumbsByActivityUserIdPage(@Param("aid") int aid, @Param("uid") int uid,  @Param("start") int start, @Param("limit") int limit);
 	
 	@Select("select id, file, thumb from userimg where aid=#{id} order by id desc")
 	List<Thumb> getThumbsByActivityId(@Param("id") int id);

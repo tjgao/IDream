@@ -8,6 +8,7 @@ app.run(function($ionicPlatform) {
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
+
   });
 })
 
@@ -29,7 +30,8 @@ app.config(function($stateProvider, $urlRouterProvider){
         abstract:true,
         views: {
             'mainView':{
-            	templateUrl:'templates/entry.html'
+            	templateUrl:'templates/entry.html',
+                controller:'topController'
             }
         }
     })
@@ -37,7 +39,7 @@ app.config(function($stateProvider, $urlRouterProvider){
         parent:'entry',
         url:'/activities',
         views: {
-            'tab-activities': { 
+            'tabView': { 
                 templateUrl: 'templates/tab-activities.html',
                 controller:'topController'
             }
@@ -47,7 +49,7 @@ app.config(function($stateProvider, $urlRouterProvider){
         parent:'entry',
         url:'/interestedImg/:uId',
         views: {
-            'tab-interested': { 
+            'tabView': { 
             	templateUrl: 'templates/tab-interestedImg.html',
             	controller:'followingImageController'
             }

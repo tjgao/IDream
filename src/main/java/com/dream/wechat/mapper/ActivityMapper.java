@@ -26,6 +26,9 @@ public interface ActivityMapper {
 	@Select("select * from activity order by orderby desc ")
 	List<Activity> getActivities();
 	
+	@Select("select count(*) from userimg where aid=#{id}")
+	int totalImgByActivity(int id);
+	
 	@Select("select a.id as id, a.thumb as thumb from userimg as a, activity as b "
 			+ "where a.aId = b.id and b.id=#{id} order by a.id desc")
 	List<Thumb> getLatestThumbs(int id);

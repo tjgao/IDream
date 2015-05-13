@@ -59,10 +59,11 @@ public class DockInController {
 	
 	
 	private User getUserInfo2(String openid) {
+		String ret = null;
 		try{
-			String token = AuthUtils.getAccessToken();
+			String token = AuthUtils.getAccessToken(false);
 			String s = String.format("%s?access_token=%s&openid=%s&lang=zh_CN", USER_INFO_URL, token, openid);		
-			String ret = AuthUtils.HttpsRequest(s);
+			ret = AuthUtils.HttpsRequest(s);
 			ObjectMapper mapper = new ObjectMapper();
 			HashMap<String, String> obj = mapper.readValue(ret.getBytes("utf-8"), new TypeReference<HashMap<String,String>>(){});
 			if( obj.get("errcode") != null )
@@ -81,6 +82,24 @@ public class DockInController {
 			return u;
 		} catch(Exception e) {
 			e.printStackTrace();
+			if( ret == null )
+				return null;
+			ObjectMapper mapper = new ObjectMapper();
+			HashMap<String, String> obj = null;
+			try{
+				mapper.readValue(ret.getBytes("utf-8"), new TypeReference<HashMap<String,String>>(){});
+			} catch(Exception ee) {
+				return null;
+			}
+			String code = obj.get("errcode");
+			if( code != null ) {
+				logger.debug("Token expired earlier than expected!!! Grab a new one");
+				try{
+					AuthUtils.getAccessToken(true);
+				} catch(Exception ee) {
+					return null;
+				}
+			}
 			return null;
 		}
 	}
@@ -123,7 +142,7 @@ public class DockInController {
 			ai.setRoot("item");
 			ai.addCDATA("Title", i.getName() + ": " + i.getDescription());
 			ai.addCDATA("Description", i.getDescription());
-			ai.addCDATA("Url", "http://m.idreamfactory.cn/main#/image/" + i.getId());
+			ai.addCDATA("Url", "http://m.idreamfactory.cn/auth?go=/image/" + i.getId());
 			ai.addCDATA("PicUrl", "http://m.idreamfactory.cn/" + i.getThumb());
 			m.addItem("Articles", ai);
 		}
@@ -158,6 +177,8 @@ public class DockInController {
 						throw new Exception("The message is definitely wrong");
 
 					User u = getUserInfo2(openid);
+					if( u == null ) // try again
+						u = getUserInfo2(openid);
 					String relative = AppConfig.HEADDIR + File.separator
 							+ u.getOpenId() + ".jpg";
 					String head = servletCtx.getRealPath("/") + relative;
@@ -192,7 +213,7 @@ public class DockInController {
 	@RequestMapping(value = "/menuDel.do", method=RequestMethod.GET)
 	public @ResponseBody String menuDel() {
 		try{
-			String token = AuthUtils.getAccessToken();
+			String token = AuthUtils.getAccessToken(false);
 			URL u = new URL(MENU_DEL_URL + "?access_token=" + token);
 			HttpsURLConnection conn = (HttpsURLConnection)u.openConnection();
 			conn.setReadTimeout(3000);
@@ -224,7 +245,7 @@ public class DockInController {
 			InputStreamReader is = new InputStreamReader(new FileInputStream(new File(p)));
 			BufferedReader reader = new BufferedReader(is);
 			String line;
-			String token = AuthUtils.getAccessToken();
+			String token = AuthUtils.getAccessToken(false);
 			URL u = new URL(MENU_CREATE_URL + "?access_token=" + token);
 			HttpsURLConnection conn = (HttpsURLConnection)u.openConnection();
 			conn.setReadTimeout(3000);

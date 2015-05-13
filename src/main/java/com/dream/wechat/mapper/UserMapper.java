@@ -98,6 +98,30 @@ public interface UserMapper {
 			+ " c.who=a.authorId and c.follower=#{id} order by id desc")
 	public List<UserImg> getUserFollowingImg(@Param("id") int id);
 	
+	@Select("(select a.id as id, a.name as name, a.description as description,"
+			+ " a.file as file, a.authorId as authorId, b.nickname as authorName,"
+			+ " b.sex as authorSex, b.headimgurl as authorHead, a.uploadTime as uploadTime,"
+			+ " a.likes as likes, a.comments as comments, a.shared as shared,a.aid as aId"
+			+ " from userimg as a, user as b, userfollowing as c where a.authorId=b.id and"
+			+ " c.who=a.authorId and c.follower=#{id})"
+			+ " union all"
+			+ " (select a.id as id, a.name as name, a.description as description,"
+			+ " a.file as file, a.authorId as authorId, b.nickname as authorName,"
+			+ " b.sex as authorSex, b.headimgurl as authorHead, a.uploadTime as uploadTime,"
+			+ " a.likes as likes, a.comments as comments, a.shared as shared,a.aid as aId"
+			+ " from userimg as a, user as b where "
+			+ " a.authorid=#{id} and a.authorId=b.id)"
+			+ " order by id desc")
+	public List<UserImg> getInterestedImg(@Param("id") int id);
+	
+	@Select("select a.id as id, a.name as name, a.description as description, "
+			+ "a.file as file, a.authorId as authorId, b.nickname as authorName, "
+			+ "b.sex as authorSex, b.headimgurl as authorHead, a.uploadTime as uploadTime, "
+			+ "a.likes as likes, a.comments as comments, a.shared as shared,a.aid as aId "
+			+ "from userimg as a, user as b where a.authorId=b.id and a.authorId=#{id} "
+			+ "order by id desc;")
+	public List<UserImg> getUserImages(@Param("id") int id);
+	
 	@Insert("insert into userfollowing (who, follower, createtime) values (#{follow}, #{id}, now())")
 	@Options(useGeneratedKeys=true, keyProperty="id")
 	public int follow(@Param("id") int id, @Param("follow") int follow);

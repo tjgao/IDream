@@ -8,6 +8,7 @@ public class Activity {
 	private String description;
 	private String logo;
 	private List<Thumb> thumbs;
+	private int totalImg;
 	public int getId() {
 		return id;
 	}
@@ -37,6 +38,12 @@ public class Activity {
 	}
 	public void setThumbs(List<Thumb> thumbs) {
 		this.thumbs = thumbs;
+	}
+	public int getTotalImg() {
+		return totalImg;
+	}
+	public void setTotalImg(int totalImg) {
+		this.totalImg = totalImg;
 	}
 
 }

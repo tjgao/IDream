@@ -3,6 +3,8 @@ package com.dream.wechat.services;
 import java.io.File;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,7 @@ public class UserService  {
 	UserMapper mapper;
 	@Autowired
 	UserImgMapper uiMapper;
-	
+	private static final Logger logger = LoggerFactory.getLogger(UserService.class);	
 	public void insertUser(User u) {
 		mapper.insertUser(u);
 	}
@@ -35,7 +37,7 @@ public class UserService  {
 				mapper.updateUserByOpenid(u);
 			return mapper.getUserByOpenid(u.getOpenId()).getId();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.debug("New user join us!");
 			mapper.insertUser(u);
 		}
 		return -1;
@@ -69,7 +71,8 @@ public class UserService  {
 	public List<Activity> getActivities(int id) {
 		List<Activity> l = mapper.getActivitiesByUser(id);
 		for( Activity a : l) {
-			a.setThumbs(uiMapper.getThumbsByActivityIdPage(a.getId(), 0, 1));
+			//a.setThumbs(uiMapper.getThumbsByActivityIdPage(a.getId(), 0, 1));
+			a.setThumbs(uiMapper.getThumbsByActivityUserIdPage(a.getId(), id, 0, 1));
 		}
 		return l;
 	}
@@ -97,7 +100,11 @@ public class UserService  {
 	}
 	
 	public List<UserImg> getUserFollowingImg(int id) {
-		return mapper.getUserFollowingImg(id);
+		return mapper.getInterestedImg(id);
+	}
+	
+	public List<UserImg> getUserImages(int id) {
+		return mapper.getUserImages(id);
 	}
 	
 	public int follow(int id, int followed) {

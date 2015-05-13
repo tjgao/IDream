@@ -3,6 +3,7 @@ package com.dream.wechat.controller;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -41,7 +42,7 @@ public class EntryController {
 	private static final Logger logger = (Logger) LoggerFactory.getLogger(EntryController.class);
 		
 	@RequestMapping(value = "/auth", method = RequestMethod.GET)
-	public ModelAndView auth(HttpSession session, @RequestParam(value="code", required=false) String code, 
+	public ModelAndView auth(Model model, HttpSession session, @RequestParam(value="code", required=false) String code, 
 			@RequestParam(value="state", required=false) String state,
 			@RequestParam(value="auth_scope", required=false) String auth_scope,
 			@RequestParam(value="go", required=false) String go, final RedirectAttributes redirectAttributes) {
@@ -49,7 +50,8 @@ public class EntryController {
 		boolean isSNSUserInfo = true;
 		if( auth_scope != null && auth_scope.equals(AuthUtils.basicAuthScope) )
 			isSNSUserInfo = false;
-
+		model.asMap().clear();
+		
 		if( code == null && state == null ) {
 			if( session.getAttribute("USER") == null ) {
 				try {
@@ -137,10 +139,18 @@ public class EntryController {
 		return m;
 	}
 	
-
+	@RequestMapping(value="/test", method=RequestMethod.GET)
+	public ModelAndView test(Model model, HttpSession session, @RequestParam(value="go", required=false) String go) {
+		if( go != null && go.length() > 0 )
+			session.setAttribute("go", go);
+//		model.asMap().clear();
+		return new ModelAndView("redirect:main");
+	}
 	
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public ModelAndView main(HttpSession session, @RequestParam(value="openid", required=false) String openid ) {
+	public ModelAndView main(Model model, HttpSession session, @RequestParam(value="openid", required=false) String openid,
+			@RequestParam(value="from", required=false) String from, 
+			@RequestParam(value="isappinstalled", required=false) String isappinstalled) {
 		String go = (String)session.getAttribute("go");
 		if( openid != null && openid.length() > 0 ) {
 			//for test
@@ -152,7 +162,22 @@ public class EntryController {
 				session.setAttribute("USER", ul);
 			}
 		}
+//		Map<String,Object> map = model.asMap();
 		//generate signature for jssdk
+		StringBuffer url = new StringBuffer();
+		url.append("http://m.idreamfactory.cn/main");
+		boolean start = false;
+		if(from!=null&&!from.isEmpty()) {
+			url.append("?from=");
+			url.append(from);
+			start = true;
+		}
+		if(isappinstalled!=null&&!isappinstalled.isEmpty()) {
+			if( start ) url.append("&");
+			else url.append("?");
+			url.append("isappinstalled=");
+			url.append(isappinstalled);
+		}
 		String nonce = AuthUtils.genRandomString(10);
 		String timestamp = Long.toString(System.currentTimeMillis()/1000);
 		String ticket = null;
@@ -163,19 +188,20 @@ public class EntryController {
 			return new ModelAndView("index");
 		}
 		String signature = AuthUtils.genJsSignature(nonce, ticket, 
-				timestamp, "http://m.idreamfactory.cn/main");
+				timestamp, url.toString());
 		
-		HashMap<String,String> map = new HashMap<String,String>();
-		map.put("nonce", nonce);
-		map.put("timestamp", timestamp);
-		map.put("signature", signature);
-		map.put("appId", AuthUtils.appId);
+		HashMap<String,String> mmap = new HashMap<String,String>();
+		mmap.put("nonce", nonce);
+		mmap.put("timestamp", timestamp);
+		mmap.put("signature", signature);
+		mmap.put("appId", AuthUtils.appId);
+		mmap.put("url", url.toString());
 		if( go != null ) {
-			map.put("go", go);
+			mmap.put("go", go);
 			session.removeAttribute("go");
 		}
 
-		return new ModelAndView("index", map);
+		return new ModelAndView("index",mmap);
 	}
 
 }
