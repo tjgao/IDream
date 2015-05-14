@@ -20,10 +20,10 @@ public interface ActivityMapper {
 	@Update("update activity set name=#{name}, description=#{description} where id=#{id}")
 	void updateActivity(Activity a);
 	
-	@Select("select * from activity order by orderby desc limit #{start}, #{limit}")
+	@Select("select * from activity order by orderby limit #{start}, #{limit}")
 	List<Activity> getActivitiesByPage(@Param("start") int start, @Param("limit") int limit);
 	
-	@Select("select * from activity order by orderby desc ")
+	@Select("select * from activity order by orderby ")
 	List<Activity> getActivities();
 	
 	@Select("select count(*) from userimg where aid=#{id}")

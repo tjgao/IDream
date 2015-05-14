@@ -3,7 +3,7 @@ var g_images = { localId:[], serverId:[]};
 
 var _curSel = '';
 
-var we_chooseImage = function(o) {
+var we_chooseImage = function( chooseCallback ) {
 	wx.chooseImage({
 		success: function(res) {
 			if( res.localIds.length > 1 ) {
@@ -12,7 +12,7 @@ var we_chooseImage = function(o) {
 			} else {
 				g_images.localId = res.localIds;
 				_curSel = res.localIds[0];
-				o.currentSel = _curSel;
+				chooseCallback(_curSel);
 			}
 		},
 		fail:function(res) {

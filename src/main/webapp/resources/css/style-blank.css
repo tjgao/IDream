@@ -32,7 +32,7 @@
     /* Opera 10.5, IE 9 */
     border-radius: 50%;  
     /*-moz-border-radius: 30px;  Disabled for FF1+ */
-	border: 1px #fff solid;
+	
 }
 
 .avatar-frame-small {
@@ -71,37 +71,13 @@
 	width:40px !important;	
 }
 
-.bar-footer { 
-	background:url(../img/footer-bg.gif) no-repeat;
-	background-size: 100% 100%;
-	color: #fff !important;
-}
 
-.bar-footer a{
-	color: #fff !important;
-}
 
 .bar-footer .tabs {
 	background: none !important;
 	border: none !important;
 }
 
-.tabs-striped .tabs {
-	background: url(../img/footer-bg.gif) no-repeat;
-	background-size: 100% 100%;
-	color: #fff !important;
-}
-
-.toptabs {
-	background: url(../img/footer-bg.gif) no-repeat !important;
-	background-size: 100% 100%;
-	color: #fff !important;
-}
-
-
-.tabs-striped .tabs a{
-	color: #fff !important;
-}
 	
 .tabs-top.tabs-striped .tab-item.activated, .tabs-top.tabs-striped .tab-item.active, .tabs-top.tabs-striped .tab-item.tab-item-active {
 	/*border-color: #005494;*/
@@ -113,15 +89,7 @@
 	height:60%;
 }
 
-.scroll .card {
-	background: url(../img/mine-bg.gif) no-repeat;
-	background-size: 100% 100%;
-	color: #fff !important;
-}
 
-.scroll .card a{
-	color: #fff !important;
-}
 
 .card .item:last-child, .card .item:last-child .item-content, .list-inset .item:last-child, .list-inset .item:last-child .item-content, .padding > .list .item:last-child, .padding > .list .item:last-child .item-content {
 	border-radius: 0;
@@ -135,19 +103,9 @@
 }
 
 .item {
-	color: #fff !important;
 	background: none !important;
 	/*border: none;*/
 }
-
-.item a {
-	color: #fff !important;
-}
-
-.item p {
-	/*color: #fff !important;*/
-}
-
 
 
 .list .tabs .ng-binding {
@@ -158,25 +116,18 @@
 	border: none;
 }
 
+.button-outline.button-outline {
+	border: none !important;
+}
+
 .force-no-padding h2 {
-	color: #00b3bd;
 	font-weight: bold;
 }
 
 .force-no-padding-ppl h2 {
-	color: #ffffff;
 	font-weight: bold;
 }
 
-.card .item h2 {
-	color: #fff !important;
-}
-
-.button-outline.button-outline {
-	border: none !important;
-	background: #00b3bd !important;
-	color: #fff !important;
-}
 
 .card .item-body .tab-item {
 	font-size: 14px !important;
@@ -207,25 +158,11 @@
 	font-size: 18px !important;
 }
 
-.ng-enter {
-	background: url(../img/up-bg.gif);
-	background-size: 100% 100%;
-}
 
 .ng-enter .bar {
 	background: none !important;
-	border: none !important;
-	color: #fff;
 }
 
-.ng-enter h1 {
-	color: #fff !important;
-}
-
-
-.ng-enter .button-clear {
-	color: #fff !important;
-}
 
 .ng-enter input[type=text], .ng-enter textarea {
 	background: #fff;
@@ -293,7 +230,6 @@
 
 .number-line .list {
 	padding-left: 60px;
-	background: url(../img/number-line.png) no-repeat left 10px top 5px !important;
 }
 
 
@@ -302,51 +238,23 @@
 }
 
 .upload-text {
-	color: #fff;
 	font-size: 16px;
 }
 
 .dream-select {
-	border: none;
+	border: 1px solid #444444;
 	color: #444444;
-	border: 1px solid #00b3bd;
 }
 
 .dream-select > a:after {
 	border-color: #ff0000; 
 }
 
-.white-font {
-	color: #fff !important;
-}
 
-.white-font a{
-	color: #fff !important;
-}
-
-.bar-footer .icon {
-	color: #fff;
-}
-
-.newupload {
-	background: url(../img/up-bg.gif);
-	background-size: 100% 100%;
-}
-
-
-.newupload .bar {
-	background: none;
-}
-
-.newupload .button-clear, .newupload h1, .newupload .ng-pristine {
-	color: #fff;
-}
 
 .newupload input {
 	background: #fff;
-    color: #00b3bd;
     padding: 0 5px;
-	border: 1px solid #00b3bd;
 }
 
 .newupload textarea {
@@ -364,7 +272,6 @@
 }
 
 .bar .list .row .col, .bar .list .row .col60, .bar .list .comments {
-	color: #fff;
 }
 
 .ng-pristine {
@@ -372,18 +279,19 @@
 }
 
 .scroll .item button {
-	background: #00b3bd !important;
-	border: none !important;
-	color: #fff !important;
 	border-radius: 0 !important;
+	border: 1px solid #444444;
 }
 
 .list .item textarea {
-	border: 1px solid #00b3bd;
 }
 
 .scroll .item .button-small {
 	padding: 2px 6px 1px !important;
+}
+
+.toptabs a{
+	color: #444;
 }
 
 .toptabs .tabitem {
@@ -393,12 +301,8 @@
 	word-spacing: 5px;
 	font-size: 20px;
 	text-align: center;
-	color: #fff;
 }
 
-.toptabs .tabitem a{
-	color: #fff;
-}
 
 .toptabs .icon { 
 	display: inline-block;

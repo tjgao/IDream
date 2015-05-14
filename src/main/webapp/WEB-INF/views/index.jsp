@@ -12,7 +12,7 @@
 	<meta http-equiv="Expires" content="0" />
 
     <link href="resources/lib/css/ionic.min.css" rel="stylesheet">
-    <link href="resources/css/style.css" rel="stylesheet">
+    <link href="resources/css/style-blank.css" rel="stylesheet">
 
 
     <!-- ionic/angularjs js -->
@@ -28,8 +28,6 @@
 	  	var g_images = { localId:[], serverId:[]};
 		var g_uId = '${sessionScope.USER.id}';
 		var g_url = '${url}';
-/* 		var a = a || document.createElement('a');
-		alert(g_url + " : " + a.href); */
   		wx.config({
   			debug:false,
   			appId:'${appId}',
@@ -106,8 +104,10 @@
             <a class="tabitem" href="#/entry/activities"><i class="icon ion-ios-lightbulb-outline"></i>&nbsp;&nbsp;热点</a>
             <a class="tabitem" href="#/entry/interestedImg/{{t_uId}}"><i class="icon ion-ios-search"></i>&nbsp;&nbsp;关注</a>
         </div>
-	        <div class="list">
-	           <div class="item" ng-repeat="a in activities">
+	    <div class="list" ng-if="carousel.length > 0">
+		<ion-slide-box  does-continue="true" auto-play="true"  >
+    		<ion-slide ng-repeat="a in carousel">
+	           <div class="item" >
 	                <div class="row force-no-padding">
 	                   <div class="col avatar-frame-small force-no-padding">
 	                        <div class="row force-no-padding">
@@ -119,14 +119,14 @@
 	                                <h2>{{a.name}} ({{a.totalImg}})</h2>
 	                                </div>
 	                                <div class="row force-no-padding-top5">
-	                                <p>{{a.description}}</p>
+	                                	<p>{{a.description}}</p>
 	                                </div>
 	                            </div>
 	                        </div>
 	                    </div>
-	                        <div class="force-no-padding-left15" style="text-align: right">
-								<button class="button button-outline icon-left" ng-click="uploadDlg({{a.id}})"><i class="icon ion-plus"></i>&nbsp;参加</button>
-	                        </div>
+	                    <div class="force-no-padding-left15" style="text-align: right">
+							<button class="button button-outline icon-left" ng-click="uploadDlg({{a.id}})"><i class="icon ion-plus"></i>&nbsp;参加</button>
+	                    </div>
 	                </div>
 					<div class="item-body force-no-padding">
 	                    <div class="row" >
@@ -134,7 +134,38 @@
 	                    </div>
 					</div>
 	            </div>
-	        </div>
+    		</ion-slide>
+		</ion-slide-box>
+		</div>
+		<div class="list">
+			<div class="item" ng-repeat="a in activities">
+	                <div class="row force-no-padding">
+	                   <div class="col avatar-frame-small force-no-padding">
+	                        <div class="row force-no-padding">
+	                            <div class="col-fixed-40 force-no-padding">
+								<a href="#/activity/{{a.id}}"><img ng-src="{{a.logo}}"></a>
+	                            </div>
+	                            <div class="col force-no-padding-left15" ng-click="checkit({{a.id}})">
+	                                <div class="row force-no-padding">
+	                                <h2>{{a.name}} ({{a.totalImg}})</h2>
+	                                </div>
+	                                <div class="row force-no-padding-top5">
+	                                	<p>{{a.description}}</p>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <div class="force-no-padding-left15" style="text-align: right">
+							<button class="button button-outline icon-left" ng-click="uploadDlg({{a.id}})"><i class="icon ion-plus"></i>&nbsp;参加</button>
+	                    </div>
+	                </div>
+					<div class="item-body force-no-padding">
+	                    <div class="row" >
+	                        <div ng-repeat="thumb in a.thumbs" class="col col-33"><a href="#image/{{thumb.id}}"><img class="full-image" ng-src="{{thumb.thumb}}"/></a></div>
+	                    </div>
+					</div>
+			</div>
+		</div>
             <div><p>&nbsp;</p><p>&nbsp;</p></div>
         </ion-content>
     </script>
@@ -313,9 +344,10 @@
                         <i class="icon ion-image"></i>
                         选取梦想画面
                     </a>
-					<!--<div class="item item-thumbnail-left">-->
-					      <!--<img ng-src="{{imgInfo.currentSel}}">-->
-					<!--</div>-->
+					<div class="item item-thumbnail-left">
+						<img ng-if="imgInfo.tag=='A'" id="selectedImgA" src="">
+						<img ng-if="imgInfo.tag=='B'" id="selectedImgB" src="">
+					</div>
 					<p>&nbsp;</p>
 					<p class="upload-text">我的梦想是</p>
                     <label class="item item-input">
@@ -550,6 +582,10 @@
                         <i class="icon ion-image"></i>
                         选取梦想画面
                     </a>
+					<div class="item item-thumbnail-left">
+					      <!--<img ng-src="{{imgInfo.currentSel}}">-->
+						<img id="selectedImg2" src="test">
+					</div>
 					<p>&nbsp;</p>
 					<p class="upload-text">我的梦想是</p>
                     <label class="item item-input">

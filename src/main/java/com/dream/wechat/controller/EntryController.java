@@ -166,18 +166,18 @@ public class EntryController {
 		//generate signature for jssdk
 		StringBuffer url = new StringBuffer();
 		url.append("http://m.idreamfactory.cn/main");
-		boolean start = false;
-		if(from!=null&&!from.isEmpty()) {
-			url.append("?from=");
-			url.append(from);
-			start = true;
-		}
-		if(isappinstalled!=null&&!isappinstalled.isEmpty()) {
-			if( start ) url.append("&");
-			else url.append("?");
-			url.append("isappinstalled=");
-			url.append(isappinstalled);
-		}
+//		boolean start = false;
+//		if(from!=null&&!from.isEmpty()) {
+//			url.append("?from=");
+//			url.append(from);
+//			start = true;
+//		}
+//		if(isappinstalled!=null&&!isappinstalled.isEmpty()) {
+//			if( start ) url.append("&");
+//			else url.append("?");
+//			url.append("isappinstalled=");
+//			url.append(isappinstalled);
+//		}
 		String nonce = AuthUtils.genRandomString(10);
 		String timestamp = Long.toString(System.currentTimeMillis()/1000);
 		String ticket = null;

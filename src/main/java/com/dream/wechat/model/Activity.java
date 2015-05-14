@@ -9,6 +9,7 @@ public class Activity {
 	private String logo;
 	private List<Thumb> thumbs;
 	private int totalImg;
+	private int orderby;
 	public int getId() {
 		return id;
 	}
@@ -44,6 +45,12 @@ public class Activity {
 	}
 	public void setTotalImg(int totalImg) {
 		this.totalImg = totalImg;
+	}
+	public int getOrderby() {
+		return orderby;
+	}
+	public void setOrderby(int orderBy) {
+		this.orderby = orderBy;
 	}
 
 }

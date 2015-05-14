@@ -100,8 +100,13 @@ dreamControllers.controller('upController', function($http, $scope, $ionicModal,
 	if( $scope.activities.length > 0)
 		$scope.selectedItem.id = $scope.activities[0].id;	
 
+    $scope.chooseCallback = function(sel) {
+    	$scope.imgInfo.currentSel = sel;
+    	angular.element(document.querySelector( '#selectedImg2' )).attr('src',sel);
+    }    
+
     $scope.chooseImg = function() {
-    	we_chooseImage($scope.imgInfo);
+    	we_chooseImage($scope.chooseCallback);
     };	
     
     $scope.clean = function() {
@@ -109,6 +114,7 @@ dreamControllers.controller('upController', function($http, $scope, $ionicModal,
     	$scope.imgInfo.uploadImgDesc = '';
     	$scope.imgInfo.currentSel = '';
     	$scope.selectedItem.id = '';
+    	angular.element(document.querySelector( '#selectedImg2' )).attr('src','');
     };
     
     $scope.uploadCallback = function(serverId) {
@@ -254,7 +260,7 @@ dreamControllers.controller('activityController', function($http, $scope, $state
 		var share = {
 				title : "我参与了青联梦工厂的「" + $scope.activity.name + "」活动，小伙伴们速来。",
 				desc : "活动介绍：" + $scope.activity.description,
-				url : "http://m.idreamfactory.cn/auth?go=/activity/" + $scope.activity.id,
+				link: "http://m.idreamfactory.cn/auth?go=/activity/" + $scope.activity.id,
 				imgUrl : "http://m.idreamfactory.cn/" + $scope.activity.logo
 		};
 	  	setShare(share);    	
@@ -272,6 +278,7 @@ dreamControllers.controller('activityController', function($http, $scope, $state
 
     //bad , should be wrapped up
     $scope.imgInfo = {
+    		tag:'A',
     		uploadImgName:'',
     		uploadImgDesc:'',
     		currentSel:''
@@ -305,15 +312,22 @@ dreamControllers.controller('activityController', function($http, $scope, $state
 		} else 
 			$scope.thumbs = {};		
     };
+
     $scope.clean = function() {
         we_cleanImage();
         $scope.imgInfo.uploadImgName = '';
         $scope.imgInfo.uploadImgDesc = '';
         $scope.imgInfo.currentSel = '';
+        angular.element(document.querySelector( '#selectedImgA' )).attr('src','');
     };
     
+    $scope.chooseCallback = function(sel) {
+    	$scope.imgInfo.currentSel = sel;
+    	angular.element(document.querySelector( '#selectedImgA' )).attr('src',sel);
+    }
+    
     $scope.chooseImg = function() {
-    	we_chooseImage($scope.imgInfo);
+    	we_chooseImage($scope.chooseCallback);
     };
     
     $scope.uploadCallback = function(serverId) {
@@ -380,7 +394,7 @@ dreamControllers.controller('imgController',function($http, $scope, $stateParams
 		var share = {
 				title : "好图一张，来自青联梦工厂的「" + $scope.image.name + "」。",
 				desc : "图片介绍：" + $scope.image.description,
-				url : "http://m.idreamfactory.cn/auth?go=/image/" + $scope.image.id,
+				link: "http://m.idreamfactory.cn/auth?go=/image/" + $scope.image.id,
 				imgUrl : "http://m.idreamfactory.cn/" + $scope.image.thumb,
 				success: $scope.doneShare
 		};
@@ -470,14 +484,45 @@ dreamControllers.controller('imgController',function($http, $scope, $stateParams
 //    };
 });
 
-dreamControllers.controller('tabActivitiesController', function($location, $scope, $http, $ionicModal, $ionicHistory, $state) {
+dreamControllers.controller('tabActivitiesController', function($location, $scope, $http, $ionicModal, 
+		$ionicHistory, $state, $ionicSlideBoxDelegate) {
 	$scope.activities = null;
     $scope.$parent.$watch("activities", function(val, old){
     	if( val == null || val === old) return;
     	$scope.activities = val;
+    	//Expect activities already sorted
+    	$scope.carousel = [];
+    	for( var i=0; i<$scope.activities.length; i++) {
+    		if( $scope.activities[i].orderby == 0 ) {
+    			$scope.carousel.push($scope.activities[i]);
+    		}
+    	}
+    	$ionicSlideBoxDelegate.update();
+//    	var arr = null;
+//    	var last = null;
+//    	for(var i=0; i<$scope.activities.length; i++ ) {
+//    		if( $scope.activities[i].orderby != last ) {
+//    			if( arr != null ) $scope.groupAct.push(arr);
+//    			last = $scope.activities[i].orderby;
+//    			arr = [];
+//    			arr.push($scope.activities[i]);
+//    		} else {
+//    			arr.push($scope.activities[i]);
+//    		}
+//    	}
+//    	if( arr != null ) $scope.groupAct.push(arr);
     }, true);
 
+    $scope.$watch(function(){return $location.path();}, function(val, old){
+    	if(val == '/entry/activities') {
+    		$ionicSlideBoxDelegate.update();
+    		$ionicSlideBoxDelegate.enableSlide(true);
+    		$ionicSlideBoxDelegate.start();
+    	}
+    });
+    
     $scope.imgInfo = {
+    		tag:'B',
     		uploadImgName:'',
     		uploadImgDesc:'',
     		currentSel:''
@@ -509,10 +554,16 @@ dreamControllers.controller('tabActivitiesController', function($location, $scop
         $scope.imgInfo.uploadImgName = '';
         $scope.imgInfo.uploadImgDesc = '';
         $scope.imgInfo.currentSel = '';
+        angular.element(document.querySelector( '#selectedImgB' )).attr('src','');
     };
-    
+
+    $scope.chooseCallback = function(sel) {
+    	$scope.imgInfo.currentSel = sel;
+    	angular.element(document.querySelector( '#selectedImgB' )).attr('src',sel);
+    }    
+
     $scope.chooseImg = function() {
-    	we_chooseImage($scope.imgInfo);
+    	we_chooseImage($scope.chooseCallback);
     };
     
     $scope.uploadCallback = function(serverId) {
