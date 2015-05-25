@@ -95,25 +95,7 @@ public class CommonUtils {
 		BufferedImage img = ImageIO.read(u);
 		ImageIO.write(img, "jpg", new File(dst));
 	}
-	
-	public static void downloadAndThumb(String url, String dst, String thumb, int width, int height) throws Exception {
-		URL u = new URL(url);
-		BufferedImage img = ImageIO.read(u);
-		//crop the image
-		int w = img.getWidth();
-		int h = img.getHeight();
-	     
-		int x = ( w < h) ? 0 : ( w - h )/2;
-		int y = ( h < w) ? 0 : ( h - w )/2;
-		int m = (w > h) ? h : w;
-		
-		BufferedImage cropped = img.getSubimage(x, y, m, m);
-		
-		BufferedImage thumbnail = Scalr.resize(cropped, Method.QUALITY,
-				Mode.AUTOMATIC, width, height, Scalr.OP_ANTIALIAS);
-		ImageIO.write(img, "jpg", new File(dst));
-		ImageIO.write(thumbnail, "jpg", new File(thumb));
-	}
+
 	
 	public static void thumbnail(String src, String dst, int width, int height)
 			throws Exception {
@@ -125,10 +107,6 @@ public class CommonUtils {
 		} catch (CMMException ce) {
 			ce.printStackTrace();
 			return;
-//			SeekableStream ss = new FileSeekableStream(src);
-//			ParameterBlock pb = new ParameterBlock();
-//			pb.add(ss);
-//			img = JAI.create("jpeg", pb).getAsBufferedImage();
 		}
 		//crop the image
 		int w = img.getWidth();

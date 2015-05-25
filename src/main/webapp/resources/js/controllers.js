@@ -204,6 +204,13 @@ dreamControllers.controller('activityController', function($http, $scope, $state
 	$scope.hottest_thumbs = ActivityHottestRes.query({id:$scope.aId});
 	$scope.thumbs = $scope.latest_thumbs;
 	
+    $scope.showTip = function(show) { 
+     	if(show)
+     		angular.element(document.querySelector( '#tipcover' )).css('display','block');
+     	else
+     		angular.element(document.querySelector( '#tipcover' )).css('display','');
+    };
+    
 	$scope.showTab = function(t) {
 		if( t == 'latest' ) {
 			$scope.thumbs = $scope.latest_thumbs;
@@ -490,7 +497,6 @@ dreamControllers.controller('tabActivitiesController', function($location, $scop
     $scope.$parent.$watch("activities", function(val, old){
     	if( val == null || val === old) return;
     	$scope.activities = val;
-    	//Expect activities already sorted
     	$scope.carousel = [];
     	for( var i=0; i<$scope.activities.length; i++) {
     		if( $scope.activities[i].orderby == 0 ) {

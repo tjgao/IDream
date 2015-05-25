@@ -39,8 +39,8 @@ public class UserService  {
 		} catch (Exception e) {
 			logger.debug("New user join us!");
 			mapper.insertUser(u);
+			return mapper.getUserByOpenid(u.getOpenId()).getId();
 		}
-		return -1;
 	}
 	
 	public void updateUserByOpenid(User u) {

@@ -521,6 +521,8 @@
           <div class="button button-clear" ng-click="goBack()">
           <span class="icon ion-arrow-left-c"></span></div>
           <h1 class="title">{{activity.name}}</h1>
+          <div class="button button-clear" ng-click="showTip(true)">
+          <span class="icon ion-share"></span></div>
       </header>
       <div class="bar bar-footer" hide-on-scroll="true" >
           <div class="button button-clear" ng-click="prev()">
@@ -584,7 +586,7 @@
                     </a>
 					<div class="item item-thumbnail-left">
 					      <!--<img ng-src="{{imgInfo.currentSel}}">-->
-						<img id="selectedImg2" src="test">
+						<img id="selectedImg2" src="">
 					</div>
 					<p>&nbsp;</p>
 					<p class="upload-text">我的梦想是</p>

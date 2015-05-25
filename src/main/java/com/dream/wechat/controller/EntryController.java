@@ -64,10 +64,6 @@ public class EntryController {
 					.append("&redirect_uri=").append(URLEncoder.encode(url.toString(), "utf-8"))
 					.append("&response_type=code&scope=").append(isSNSUserInfo?AuthUtils.userInfoAuthScope:AuthUtils.basicAuthScope)
 					.append("&state=m_idreamfactory_cn#wechat_redirect");
-//					String redirectUrl = String.format("redirect:%s?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect", 
-//											AuthUtils.authRedirectURL, AuthUtils.appId, 
-//											URLEncoder.encode("http://"+cfg.get(AppConfig.SERVERNAME) + "/auth","utf-8"),
-//											(isSNSUserInfo?AuthUtils.userInfoAuthScope:AuthUtils.basicAuthScope), "m_idreamfactory_cn");
 					return new ModelAndView(sb.toString());
 				} catch(Exception e) {
 					e.printStackTrace();
@@ -138,19 +134,10 @@ public class EntryController {
 			session.setAttribute("go", go);
 		return m;
 	}
-	
-	@RequestMapping(value="/test", method=RequestMethod.GET)
-	public ModelAndView test(Model model, HttpSession session, @RequestParam(value="go", required=false) String go) {
-		if( go != null && go.length() > 0 )
-			session.setAttribute("go", go);
-//		model.asMap().clear();
-		return new ModelAndView("redirect:main");
-	}
+
 	
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public ModelAndView main(Model model, HttpSession session, @RequestParam(value="openid", required=false) String openid,
-			@RequestParam(value="from", required=false) String from, 
-			@RequestParam(value="isappinstalled", required=false) String isappinstalled) {
+	public ModelAndView main(Model model, HttpSession session, @RequestParam(value="openid", required=false) String openid) {
 		String go = (String)session.getAttribute("go");
 		if( openid != null && openid.length() > 0 ) {
 			//for test

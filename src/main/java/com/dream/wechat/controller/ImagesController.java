@@ -62,6 +62,7 @@ public class ImagesController {
 			iService.addComment(c);
 			h.put("retcode", 0);
 		} catch (Exception e) {
+			e.printStackTrace();
 			h.put("msg", "FAILURE");
 			h.put("retcode", -1);
 		}
@@ -97,6 +98,7 @@ public class ImagesController {
 			h.put("retcode", 0);
 			h.put("msg", "SUCCESS");
 		} catch (Exception e) {
+			e.printStackTrace();
 			h.put("msg", "FAILURE");
 			h.put("retcode", -1);
 		}
@@ -116,7 +118,7 @@ public class ImagesController {
 		String thumb = "t_" + fileName;
 		String path = servletCtx.getRealPath("/") + AppConfig.UPLOADDIR + File.separator ;
 		String thumbpath = servletCtx.getRealPath("/") + AppConfig.THUMBDIR + File.separator ; 
-		logger.debug("Image: {} needs to be done from wechat server", id);
+		logger.debug("Image: {} needs to be downloaded from wechat server", id);
 		if( AuthUtils.downloadImage(id, path + fileName) ) {
 			AppConfig cfg = AppConfig.getConfig();
 			int size = Integer.parseInt(cfg.get(AppConfig.THUMBNAIL));

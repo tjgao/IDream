@@ -81,6 +81,7 @@ public class UserController {
 			if( o.getId() == followed) {
 				h.put("retcode", -3);
 				h.put("msg", "CANNOT FOLLOW YOUSELF");
+				return h;
 			}
 			uService.follow(o.getId(), followed);
 			h.put("retcode", 0);
